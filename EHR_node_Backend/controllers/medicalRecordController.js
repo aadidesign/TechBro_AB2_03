@@ -54,14 +54,4 @@ function getRecords() {
   }
 }
 
-function saveRecords(records) {
-  try {
-    fs.writeFileSync(
-      path.join(__dirname, '../data/medicalRecords.json'),
-      JSON.stringify(records, null, 2)
-    );
-  } catch (error) {
-    console.error('Error saving records:', error);
-    throw error;
-  }
-}
+
