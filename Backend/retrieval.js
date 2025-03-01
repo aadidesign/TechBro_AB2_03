@@ -10,7 +10,7 @@ const PINECONE_HOST = process.env.PINECONE_HOST;
 const PINECONE_INDEX_NAME = "clinical-research";
 
 // Load pre-generated research data (with embeddings) from file
-const researchData = JSON.parse(fs.readFileSync("./data/research_data_embedded.json", "utf-8"));
+const researchData = JSON.parse(fs.readFileSync("./Data/research_data_embedded.json", "utf-8"));
 
 // Initialize the Google Generative AI client and the embedding model
 const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);

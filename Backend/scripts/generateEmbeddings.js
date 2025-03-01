@@ -4,7 +4,7 @@ const { GoogleGenerativeAI } = require("@google/generative-ai");
 require('dotenv').config();
 
 // Ensure your GEMINI_API_KEY is set in the .env file
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY || "AIzaSyCRdq7VVCj0magiKaCnVuRjSyM5MHyZ0T8";
 if (!GEMINI_API_KEY) {
   console.error("Please set your GEMINI_API_KEY in the .env file.");
   process.exit(1);
@@ -15,8 +15,8 @@ const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
 const model = genAI.getGenerativeModel({ model: "text-embedding-004" });
 
 // Define file paths for input research data and output with embeddings
-const inputFilePath = './data/research_data.json';
-const outputFilePath = './data/research_data_embedded.json';
+const inputFilePath = '../Data/research_data.json';
+const outputFilePath = '../Data/research_data_embedded.json';
 
 // Load research data (assumed to be an array of objects with "title" and "abstract" fields)
 const researchData = JSON.parse(fs.readFileSync(inputFilePath, 'utf-8'));

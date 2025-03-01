@@ -64,7 +64,7 @@
         const data = await response.json();
 
         // Display recommendation
-        document.getElementById('recommendation').innerText = data.recommendation.response.candidates.0.content.parts.0.text;
+        document.getElementById('recommendation').innerText = data.recommendation.response.candidates[0].content.parts[0].text;
 
         // Display research sources
         let sourcesHTML = "";
