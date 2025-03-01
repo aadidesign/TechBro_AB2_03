@@ -45,21 +45,21 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(ejsLayouts);
 
 // Add after app initialization and before routes
-app.use(session({
-  secret: 'your-secret-key',
-  resave: false,
-  saveUninitialized: false
-}));
-app.use(flash());
+// app.use(session({
+//   secret: 'your-secret-key',
+//   resave: false,
+//   saveUninitialized: false
+// }));
+// app.use(flash());
 
-// Add middleware to make flash messages available to all views
-app.use((req, res, next) => {
-  res.locals.messages = {
-    success: req.flash('success'),
-    error: req.flash('error')
-  };
-  next();
-});
+// // Add middleware to make flash messages available to all views
+// app.use((req, res, next) => {
+//   res.locals.messages = {
+//     success: req.flash('success'),
+//     error: req.flash('error')
+//   };
+//   next();
+// });
 
 // Home route
 app.get("/", async (req, res, next) => {
