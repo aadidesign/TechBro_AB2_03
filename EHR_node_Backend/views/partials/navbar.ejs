@@ -1,12 +1,72 @@
-<nav class="bg-blue-600 p-4 text-white">
-    <ul class="flex justify-around">
-        <li><a href="/" class="hover:underline">Home</a></li>
-        <li><a href="/patient" class="hover:underline">Patients</a></li>
-        <li><a href="/appointment" class="hover:underline">Appointments</a></li>
-        <li><a href="/medicalrecords" class="hover:underline">Medical Records</a></li>
-        <li><a href="/prescription" class="hover:underline">Prescriptions</a></li>
-        <li><a href="/labtests" class="hover:underline">Lab Tests</a></li>
-        <li><a href="/doctor" class="hover:underline">Doctors</a></li>
-        <li><a href="/reports" class="hover:underline">Reports</a></li>
-    </ul>
+<nav class="bg-gradient-to-r from-blue-600 to-blue-800 shadow-lg">
+  <div class="max-w-7xl mx-auto px-4">
+    <div class="flex justify-between h-16">
+      <div class="flex items-center">
+        <div class="flex-shrink-0">
+          <a href="/" class="text-white font-bold text-xl">EHR System</a>
+        </div>
+      </div>
+      
+      <div class="hidden md:flex items-center space-x-4">
+        <a href="/" class="text-white hover:bg-blue-700 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200">
+          Home
+        </a>
+        <a href="/patient" class="text-white hover:bg-blue-700 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200">
+          Patients
+        </a>
+        <a href="/appointment" class="text-white hover:bg-blue-700 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200">
+          Appointments
+        </a>
+        <a href="/medicalrecords" class="text-white hover:bg-blue-700 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200">
+          Medical Records
+        </a>
+        <a href="/prescription" class="text-white hover:bg-blue-700 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200">
+          Prescriptions
+        </a>
+        <a href="/labtests" class="text-white hover:bg-blue-700 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200">
+          Lab Tests
+        </a>
+        <a href="/doctor" class="text-white hover:bg-blue-700 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200">
+          Doctors
+        </a>
+        <a href="/reports" class="text-white hover:bg-blue-700 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200">
+          Reports
+        </a>
+      </div>
+
+      <!-- Mobile menu button -->
+      <div class="md:hidden flex items-center">
+        <button type="button" class="mobile-menu-button inline-flex items-center justify-center p-2 rounded-md text-white hover:bg-blue-700 focus:outline-none">
+          <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile menu -->
+  <div class="mobile-menu hidden md:hidden">
+    <div class="px-2 pt-2 pb-3 space-y-1">
+      <a href="/" class="text-white block px-3 py-2 rounded-md text-base font-medium hover:bg-blue-700">Home</a>
+      <a href="/patient" class="text-white block px-3 py-2 rounded-md text-base font-medium hover:bg-blue-700">Patients</a>
+      <a href="/appointment" class="text-white block px-3 py-2 rounded-md text-base font-medium hover:bg-blue-700">Appointments</a>
+      <a href="/medicalrecords" class="text-white block px-3 py-2 rounded-md text-base font-medium hover:bg-blue-700">Medical Records</a>
+      <a href="/prescription" class="text-white block px-3 py-2 rounded-md text-base font-medium hover:bg-blue-700">Prescriptions</a>
+      <a href="/labtests" class="text-white block px-3 py-2 rounded-md text-base font-medium hover:bg-blue-700">Lab Tests</a>
+      <a href="/doctor" class="text-white block px-3 py-2 rounded-md text-base font-medium hover:bg-blue-700">Doctors</a>
+      <a href="/reports" class="text-white block px-3 py-2 rounded-md text-base font-medium hover:bg-blue-700">Reports</a>
+    </div>
+  </div>
 </nav>
+
+<script>
+  // Mobile menu toggle
+  const mobileMenuButton = document.querySelector('.mobile-menu-button');
+  const mobileMenu = document.querySelector('.mobile-menu');
+
+  mobileMenuButton.addEventListener('click', () => {
+    mobileMenu.classList.toggle('hidden');
+  });
+</script>
+
