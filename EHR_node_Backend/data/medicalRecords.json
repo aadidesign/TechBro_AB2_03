@@ -1,12 +1,74 @@
 [
-    {
-      "id": "R1001",
-      "patient_name": "Jane Doe",
-      "diagnosis": "Diabetes",
-      "medications": ["Metformin"],
-      "allergies": ["Peanuts"],
-      "lab_reports": "diabetes_report.pdf",
-      "date": "2025-03-02"
-    }
-  ]
-  
+  {
+    "id": "R1001",
+    "patient_name": "Jane Doe",
+    "diagnosis": "Diabetes",
+    "medications": ["Metformin"],
+    "allergies": ["Peanuts"],
+    "lab_reports": "diabetes_report.pdf",
+    "date": "2025-03-02"
+  },
+  {
+    "id": "R1002",
+    "patient_name": "John Smith",
+    "diagnosis": "Hypertension",
+    "medications": ["Amlodipine"],
+    "allergies": ["Shellfish"],
+    "lab_reports": "hypertension_report.pdf",
+    "date": "2025-03-04"
+  },
+  {
+    "id": "R1003",
+    "patient_name": "Emma Johnson",
+    "diagnosis": "Asthma",
+    "medications": ["Albuterol"],
+    "allergies": ["Dust"],
+    "lab_reports": "asthma_test.pdf",
+    "date": "2025-03-05"
+  },
+  {
+    "id": "R1004",
+    "patient_name": "Michael Brown",
+    "diagnosis": "High Cholesterol",
+    "medications": ["Atorvastatin"],
+    "allergies": ["None"],
+    "lab_reports": "cholesterol_report.pdf",
+    "date": "2025-03-06"
+  },
+  {
+    "id": "R1005",
+    "patient_name": "Sophia Davis",
+    "diagnosis": "Thyroid Disorder",
+    "medications": ["Levothyroxine"],
+    "allergies": ["Penicillin"],
+    "lab_reports": "thyroid_report.pdf",
+    "date": "2025-03-07"
+  },
+  {
+    "id": "R1006",
+    "patient_name": "Liam Wilson",
+    "diagnosis": "Anemia",
+    "medications": ["Iron Supplements"],
+    "allergies": ["None"],
+    "lab_reports": "anemia_test.pdf",
+    "date": "2025-03-08"
+  },
+  {
+    "id": "R1007",
+    "patient_name": "Olivia Martin",
+    "diagnosis": "Migraine",
+    "medications": ["Sumatriptan"],
+    "allergies": ["Lactose"],
+    "lab_reports": "migraine_scan.pdf",
+    "date": "2025-03-09"
+  },
+  {
+    "id": "R1008",
+    "patient_name": "William Clark",
+    "diagnosis": "Arthritis",
+    "medications": ["Ibuprofen"],
+    "allergies": ["Gluten"],
+    "lab_reports": "arthritis_report.pdf",
+    "date": "2025-03-10"
+  }
+]

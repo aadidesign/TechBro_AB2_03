@@ -1,11 +1,66 @@
 [
-    {
-      "id": "T1001",
-      "patient_name": "Alice Johnson",
-      "doctor_name": "Dr. Patel",
-      "test_name": "Blood Test",
-      "status": "Pending",
-      "resultFile": null
-    }
-  ]
-  
+  {
+    "id": "T1001",
+    "patient_name": "Alice Johnson",
+    "doctor_name": "Dr. Patel",
+    "test_name": "Blood Test",
+    "status": "Pending",
+    "resultFile": null
+  },
+  {
+    "id": "T1002",
+    "patient_name": "Michael Brown",
+    "doctor_name": "Dr. Sharma",
+    "test_name": "X-Ray",
+    "status": "Completed",
+    "resultFile": "xray_michael.pdf"
+  },
+  {
+    "id": "T1003",
+    "patient_name": "Sophia Lee",
+    "doctor_name": "Dr. Verma",
+    "test_name": "MRI Scan",
+    "status": "Pending",
+    "resultFile": null
+  },
+  {
+    "id": "T1004",
+    "patient_name": "James Wilson",
+    "doctor_name": "Dr. Mehta",
+    "test_name": "Urine Test",
+    "status": "Completed",
+    "resultFile": "urine_james.pdf"
+  },
+  {
+    "id": "T1005",
+    "patient_name": "Emma Garcia",
+    "doctor_name": "Dr. Khan",
+    "test_name": "ECG",
+    "status": "Pending",
+    "resultFile": null
+  },
+  {
+    "id": "T1006",
+    "patient_name": "Liam Anderson",
+    "doctor_name": "Dr. Das",
+    "test_name": "Liver Function Test",
+    "status": "Completed",
+    "resultFile": "lft_liam.pdf"
+  },
+  {
+    "id": "T1007",
+    "patient_name": "Olivia Thomas",
+    "doctor_name": "Dr. Reddy",
+    "test_name": "CT Scan",
+    "status": "Pending",
+    "resultFile": null
+  },
+  {
+    "id": "T1008",
+    "patient_name": "William Martin",
+    "doctor_name": "Dr. Nair",
+    "test_name": "Cholesterol Test",
+    "status": "Completed",
+    "resultFile": "cholesterol_william.pdf"
+  }
+]

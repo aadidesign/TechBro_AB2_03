@@ -1,0 +1,23 @@
+<div class="row justify-content-center">
+    <div class="col-md-6">
+      <div class="card mt-5">
+        <div class="card-header bg-danger text-white">
+          <h3 class="mb-0"><%= title %></h3>
+        </div>
+        <div class="card-body">
+          <div class="alert alert-danger">
+            <%= message %>
+          </div>
+          <% if (error && error.stack) { %>
+            <div class="mt-4">
+              <h4>Stack Trace:</h4>
+              <pre class="bg-light p-3 mt-2"><%= error.stack %></pre>
+            </div>
+          <% } %>
+          <div class="mt-4 text-center">
+            <a href="/" class="btn btn-primary">Return to Homepage</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
