@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/ehrbackend.iml" filepath="$PROJECT_DIR$/.idea/ehrbackend.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/Ehr_Backend.iml" filepath="$PROJECT_DIR$/.idea/Ehr_Backend.iml" />
     </modules>
   </component>
 </project>
