@@ -1,112 +1,160 @@
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-  <!-- Header with Add Doctor Button -->
-  <div class="flex flex-col md:flex-row justify-between items-center mb-8">
-    <h1 class="text-3xl font-bold text-gray-900 mb-4 md:mb-0">Doctor Management</h1>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <button
-      type="button"
-      class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md shadow-sm text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all"
-      data-bs-toggle="modal"
-      data-bs-target="#addDoctorModal"
-    >
-      <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-      </svg>
-      Add New Doctor
-    </button>
-  </div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NeoMed Flux - Doctor Management</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+    
+    .glassmorphism {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .dark .glassmorphism {
+      background: rgba(17, 24, 39, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    
+    .sapphire-teal-gradient {
+      background: linear-gradient(135deg, #1143e3 0%, #38b2ac 100%);
+    }
+  </style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+  <!-- Main Content Area -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Header with Add Doctor Button -->
+    <div class="flex flex-col md:flex-row justify-between items-center mb-8">
+      <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-4 md:mb-0">Doctor Management</h1>
+      <button
+        type="button"
+        class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-sapphire-600 to-teal-500 border border-transparent rounded-xl shadow-lg text-sm font-medium text-white hover:from-sapphire-700 hover:to-teal-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sapphire-500 transition-all hover:scale-105 active:scale-95"
+        onclick="openModal()"
+      >
+        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+        </svg>
+        Add New Doctor
+      </button>
+    </div>
 
-  <!-- Doctors Table -->
-  <div class="bg-white rounded-xl shadow-lg overflow-hidden">
-    <% if (doctors && doctors.length > 0) { %>
-      <table class="min-w-full divide-y divide-gray-200">
-        <thead class="bg-gray-50">
-          <tr>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Specialization</th>
-          </tr>
-        </thead>
-        <tbody class="bg-white divide-y divide-gray-200">
-          <% doctors.forEach(doctor => { %>
-            <tr class="hover:bg-gray-50 transition-colors">
-              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900"><%= doctor.id %></td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><%= doctor.name %></td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><%= doctor.specialization %></td>
+    <!-- Doctors Table -->
+    <div class="glassmorphism rounded-2xl shadow-lg overflow-hidden">
+      <% if (doctors && doctors.length > 0) { %>
+        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+          <thead class="bg-gray-50 dark:bg-gray-900 dark:bg-opacity-40">
+            <tr>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">ID</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Name</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Specialization</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
             </tr>
-          <% }); %>
-        </tbody>
-      </table>
-    <% } else { %>
-      <div class="p-6 text-center">
-        <div class="inline-flex items-center justify-center w-16 h-16 bg-blue-50 rounded-full">
-          <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-          </svg>
+          </thead>
+          <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+            <% doctors.forEach(doctor => { %>
+              <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white"><%= doctor.id %></td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400"><%= doctor.name %></td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400"><%= doctor.specialization %></td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                  <div class="flex space-x-2">
+                    <button
+                      class="text-sapphire-600 dark:text-sapphire-400 hover:text-sapphire-700 dark:hover:text-sapphire-500 transition-colors"
+                      onclick="showDetails('<%= doctor.id %>')"
+                    >
+                      Details
+                    </button>
+                    <button
+                      class="text-coral-500 hover:text-coral-600 transition-colors"
+                      onclick="deleteDoctor('<%= doctor.id %>')"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      <% } else { %>
+        <div class="p-12 text-center">
+          <div class="inline-flex items-center justify-center w-20 h-20 bg-sapphire-100 dark:bg-sapphire-900 dark:bg-opacity-30 text-sapphire-600 dark:text-sapphire-400 rounded-full mb-6">
+            <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+            </svg>
+          </div>
+          <h3 class="text-xl font-medium text-gray-900 dark:text-white mb-2">No Doctors Found</h3>
+          <p class="text-gray-500 dark:text-gray-400 mb-6">Add a new doctor to get started.</p>
+          <button
+            type="button"
+            class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-sapphire-600 to-teal-500 border border-transparent rounded-xl shadow-lg text-sm font-medium text-white hover:from-sapphire-700 hover:to-teal-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sapphire-500 transition-all"
+            onclick="openModal()"
+          >
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+            </svg>
+            Add Your First Doctor
+          </button>
         </div>
-        <h3 class="mt-4 text-lg font-medium text-gray-900">No Doctors Found</h3>
-        <p class="mt-1 text-sm text-gray-500">Add a new doctor to get started.</p>
-      </div>
-    <% } %>
+      <% } %>
+    </div>
   </div>
 
   <!-- Add Doctor Modal -->
-  <div class="modal fade" id="addDoctorModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content bg-white rounded-lg shadow-xl">
-        <div class="modal-header px-6 py-4 border-b border-gray-200">
-          <h5 class="text-xl font-semibold text-gray-900">Add New Doctor</h5>
-          <button
-            type="button"
-            class="text-gray-400 hover:text-gray-500 focus:outline-none"
-            data-bs-dismiss="modal"
-            aria-label="Close"
-          >
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-            </svg>
+  <div id="addDoctorModal" class="fixed inset-0 flex items-center justify-center z-50 hidden">
+    <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg w-full max-w-md relative z-10">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Add New Doctor</h2>
+        <button id="closeModal" class="text-gray-700 dark:text-gray-300 text-2xl leading-none" onclick="closeModal()">&times;</button>
+      </div>
+      <form action="/doctor/add" method="POST">
+        <div class="mb-4">
+          <label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Doctor Name</label>
+          <input type="text" name="name" id="name" class="mt-1 block w-full border border-gray-300 dark:border-gray-700 rounded-md p-2 bg-gray-50 dark:bg-gray-700 dark:text-white" placeholder="Enter doctor name" required>
+        </div>
+        <div class="mb-4">
+          <label for="specialization" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Specialization</label>
+          <input type="text" name="specialization" id="specialization" class="mt-1 block w-full border border-gray-300 dark:border-gray-700 rounded-md p-2 bg-gray-50 dark:bg-gray-700 dark:text-white" placeholder="Enter specialization" required>
+        </div>
+        <div class="flex justify-end">
+          <button type="submit" class="px-4 py-2 bg-gradient-to-r from-sapphire-600 to-teal-500 text-white rounded-lg shadow hover:from-sapphire-700 hover:to-teal-600 transition-all">
+            Save Doctor
           </button>
         </div>
-        <form action="/doctor/add" method="POST">
-          <div class="modal-body px-6 py-4">
-            <div class="mb-6">
-              <label for="name" class="block text-sm font-medium text-gray-700 mb-2">Doctor Name</label>
-              <input
-                type="text"
-                id="name"
-                name="name"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-                required
-              />
-            </div>
-            <div class="mb-6">
-              <label for="specialization" class="block text-sm font-medium text-gray-700 mb-2">Specialization</label>
-              <input
-                type="text"
-                id="specialization"
-                name="specialization"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-                required
-              />
-            </div>
-          </div>
-          <div class="modal-footer px-6 py-4 border-t border-gray-200 flex justify-end space-x-4">
-            <button
-              type="button"
-              class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 transition-all"
-              data-bs-dismiss="modal"
-            >
-              Close
-            </button>
-            <button
-              type="submit"
-              class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
-            >
-              Save Doctor
-            </button>
-          </div>
-        </form>
-      </div>
+      </form>
     </div>
+    <!-- Modal Overlay -->
+    <div class="fixed inset-0 bg-black opacity-50" onclick="closeModal()"></div>
   </div>
-</div>
+
+  <!-- JavaScript for Modal and Actions -->
+  <script>
+    function openModal() {
+      document.getElementById('addDoctorModal').classList.remove('hidden');
+    }
+
+    function closeModal() {
+      document.getElementById('addDoctorModal').classList.add('hidden');
+    }
+
+    function showDetails(doctorId) {
+      alert(`Details for Doctor ID: ${doctorId}`);
+    }
+
+    function deleteDoctor(doctorId) {
+      if (confirm(`Are you sure you want to delete Doctor ID: ${doctorId}?`)) {
+        alert(`Doctor ID: ${doctorId} deleted.`);
+      }
+    }
+  </script>
+</body>
+</html>

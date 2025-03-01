@@ -52,7 +52,7 @@ app.use(ejsLayouts);
 // }));
 // app.use(flash());
 
-//  Add middleware to make flash messages available to all views
+// // Add middleware to make flash messages available to all views
 // app.use((req, res, next) => {
 //   res.locals.messages = {
 //     success: req.flash('success'),
