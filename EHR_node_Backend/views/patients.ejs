@@ -176,7 +176,7 @@
 
   async function requestAISupport(patientId) {
     try {
-      const response = await fetch(`https://congenial-journey-7gr54g5pj593w546-3010.app.github.dev/generate-recommendation`, {
+      const response = await fetch(`http://localhost:3010/generate-recommendation`, {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({ patientId })

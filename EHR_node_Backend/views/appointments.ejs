@@ -1,157 +1,328 @@
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-  <!-- Header with Book Appointment Button -->
-  <div class="flex flex-col md:flex-row justify-between items-center mb-8">
-    <h1 class="text-3xl font-bold text-gray-900 mb-4 md:mb-0">Appointment Management</h1>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <button
-      type="button"
-      class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md shadow-sm text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all"
-      data-bs-toggle="modal"
-      data-bs-target="#bookAppointmentModal"
-    >
-      <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-      </svg>
-      Book New Appointment
-    </button>
-  </div>
-
-  <!-- Appointments Table -->
-  <div class="bg-white rounded-xl shadow-lg overflow-hidden">
-    <% if (appointments && appointments.length > 0) { %>
-      <table class="min-w-full divide-y divide-gray-200">
-        <thead class="bg-gray-50">
-          <tr>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Patient Name</th>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Doctor</th>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Time</th>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Reason</th>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-          </tr>
-        </thead>
-        <tbody class="bg-white divide-y divide-gray-200">
-          <% appointments.forEach(appointment => { %>
-            <tr class="hover:bg-gray-50 transition-colors">
-              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900"><%= appointment.id %></td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><%= appointment.patient_name %></td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><%= appointment.doctor %></td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><%= appointment.date %></td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><%= appointment.time %></td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><%= appointment.reason %></td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                <a
-                  href="/appointment/cancel/<%= appointment.id %>"
-                  class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-full text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 transition-all"
-                >
-                  Cancel
-                </a>
-              </td>
-            </tr>
-          <% }); %>
-        </tbody>
-      </table>
-    <% } else { %>
-      <div class="p-6 text-center">
-        <div class="inline-flex items-center justify-center w-16 h-16 bg-blue-50 rounded-full">
-          <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+<div class="w-screen min-h-screen bg-gradient-to-br from-blue-900 to-teal-800 flex">
+  <!-- Left Sidebar Navigation -->
+  <div class="min-h-screen bg-white bg-opacity-10 backdrop-blur-lg border-r border-white/10 shadow-xl">
+    <div class="p-4">
+      <!-- Logo -->
+      <div class="flex items-center space-x-3 mb-8">
+        <div class="w-10 h-10 bg-gradient-to-r from-teal-400 to-blue-500 rounded-xl flex items-center justify-center shadow-lg">
+          <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
           </svg>
         </div>
-        <h3 class="mt-4 text-lg font-medium text-gray-900">No Appointments Found</h3>
-        <p class="mt-1 text-sm text-gray-500">Book a new appointment to get started.</p>
+        <span class="text-xl font-bold text-white glass-text">MedPortal</span>
       </div>
-    <% } %>
+
+      <!-- Navigation Links -->
+      <nav class="space-y-2">
+        <a href="/dashboard" class="flex items-center space-x-3 px-4 py-3 rounded-xl bg-white bg-opacity-10 backdrop-blur-lg hover:bg-opacity-20 transition-all group">
+          <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+          </svg>
+          <span class="text-white font-medium">Dashboard</span>
+        </a>
+
+        <a href="/patient" class="flex items-center space-x-3 px-4 py-3 rounded-xl hover:bg-white hover:bg-opacity-10 transition-all group">
+          <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+          </svg>
+          <span class="text-white font-medium">Patients</span>
+        </a>
+
+        <a href="/appointment" class="flex items-center space-x-3 px-4 py-3 rounded-xl bg-white bg-opacity-20 transition-all group">
+          <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+          </svg>
+          <span class="text-white font-medium">Appointments</span>
+        </a>
+
+        <a href="/medicalrecords" class="flex items-center space-x-3 px-4 py-3 rounded-xl hover:bg-white hover:bg-opacity-10 transition-all group">
+          <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
+          <span class="text-white font-medium">Medical Records</span>
+        </a>
+
+        <a href="/prescription" class="flex items-center space-x-3 px-4 py-3 rounded-xl hover:bg-white hover:bg-opacity-10 transition-all group">
+          <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+          </svg>
+          <span class="text-white font-medium">Prescriptions</span>
+        </a>
+
+        <a href="/reports" class="flex items-center space-x-3 px-4 py-3 rounded-xl hover:bg-white hover:bg-opacity-10 transition-all group">
+          <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
+          <span class="text-white font-medium">Reports</span>
+        </a>
+      </nav>
+    </div>
   </div>
 
-  <!-- Book Appointment Modal -->
-  <div class="modal fade" id="bookAppointmentModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content bg-white rounded-lg shadow-xl">
-        <div class="modal-header px-6 py-4 border-b border-gray-200">
-          <h5 class="text-xl font-semibold text-gray-900">Book New Appointment</h5>
+  <!-- Main Content -->
+  <div class="flex-1 p-8">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+      body {
+        font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      }
+      
+      /* Enhanced text readability on glass backgrounds */
+      .glass-text {
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        letter-spacing: 0.01em;
+      }
+      
+      /* Brighter placeholder text */
+      ::placeholder {
+        color: rgba(255, 255, 255, 0.8);
+      }
+
+      /* Ensure select options are readable */
+      select option {
+        background-color: #ffffff;
+        color: #1a202c;
+        font-weight: 500;
+      }
+    </style>
+
+    <div class="max-w-7xl mx-auto">
+      <!-- AI Assistant Float - Increased contrast -->
+      <div class="fixed bottom-6 right-6 bg-white bg-opacity-25 backdrop-blur-lg rounded-2xl p-4 shadow-xl hover:shadow-2xl transition-all cursor-pointer">
+        <div class="flex items-center space-x-3">
+          <div class="w-10 h-10 bg-gradient-to-r from-orange-400 to-pink-500 rounded-full flex items-center justify-center shadow-lg">
+            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
+            </svg>
+          </div>
+          <div class="text-white">
+            <p class="text-sm font-semibold glass-text tracking-wide">AI Assistant</p>
+            <p class="text-xs font-medium text-white glass-text">Click to get scheduling help</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Header Section - Adjusted color scheme for better contrast -->
+      <div class="bg-gradient-to-r from-blue-900/80 to-teal-800/80 backdrop-blur-md rounded-3xl p-8 mb-8 shadow-xl border border-white/20">
+        <div class="flex flex-col md:flex-row justify-between items-center">
+          <div>
+            <h1 class="text-4xl font-extrabold text-white mb-2 glass-text tracking-wide drop-shadow-lg">
+              Smart Appointments
+            </h1>
+            <p class="text-2xl text-teal-200 font-semibold glass-text tracking-wide drop-shadow-md">
+              AI-Powered Clinical Scheduling System
+            </p>
+          </div>
           <button
             type="button"
-            class="text-gray-400 hover:text-gray-500 focus:outline-none"
-            data-bs-dismiss="modal"
-            aria-label="Close"
+            class="mt-4 md:mt-0 px-6 py-3 bg-gradient-to-r from-orange-500 to-pink-600 rounded-xl text-white font-bold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all text-lg"
+            data-bs-toggle="modal"
+            data-bs-target="#bookAppointmentModal"
           >
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-            </svg>
+            <div class="flex items-center space-x-2">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+              </svg>
+              <span class="drop-shadow-md">Schedule Appointment</span>
+            </div>
           </button>
         </div>
-        <form action="/appointment/book" method="POST">
-          <div class="modal-body px-6 py-4">
-            <div class="mb-6">
-              <label for="patientName" class="block text-sm font-medium text-gray-700 mb-2">Patient Name</label>
-              <input
-                type="text"
-                id="patientName"
-                name="patientName"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-                required
-              />
-            </div>
-            <div class="mb-6">
-              <label for="doctor" class="block text-sm font-medium text-gray-700 mb-2">Doctor</label>
-              <input
-                type="text"
-                id="doctor"
-                name="doctor"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-                required
-              />
-            </div>
-            <div class="mb-6">
-              <label for="date" class="block text-sm font-medium text-gray-700 mb-2">Date</label>
-              <input
-                type="date"
-                id="date"
-                name="date"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-                required
-              />
-            </div>
-            <div class="mb-6">
-              <label for="time" class="block text-sm font-medium text-gray-700 mb-2">Time</label>
-              <input
-                type="time"
-                id="time"
-                name="time"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-                required
-              />
-            </div>
-            <div class="mb-6">
-              <label for="reason" class="block text-sm font-medium text-gray-700 mb-2">Reason</label>
-              <textarea
-                id="reason"
-                name="reason"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-                rows="3"
-                required
-              ></textarea>
+
+        <!-- Smart Filters - Adjusted colors for better visibility -->
+        <div class="mt-8 grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div class="relative">
+            <input
+              type="text"
+              placeholder="Search doctors, specialties..."
+              class="w-full bg-blue-900/50 border-2 border-teal-400/30 rounded-xl px-4 py-3 text-white font-semibold placeholder-teal-200 focus:ring-2 focus:ring-teal-400 focus:outline-none shadow-lg text-lg"
+            />
+          </div>
+          <div class="relative">
+            <select class="w-full bg-blue-900/50 border-2 border-teal-400/30 rounded-xl px-4 py-3 text-teal-200 font-semibold focus:ring-2 focus:ring-teal-400 shadow-lg appearance-none text-lg">
+              <option value="" disabled selected class="text-gray-900 font-semibold">Filter by Specialty</option>
+              <option value="cardiology" class="text-gray-900 font-semibold">Cardiology</option>
+              <option value="neurology" class="text-gray-900 font-semibold">Neurology</option>
+              <option value="pediatrics" class="text-gray-900 font-semibold">Pediatrics</option>
+            </select>
+            <div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+              <svg class="w-6 h-6 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
             </div>
           </div>
-          <div class="modal-footer px-6 py-4 border-t border-gray-200 flex justify-end space-x-4">
-            <button
-              type="button"
-              class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 transition-all"
-              data-bs-dismiss="modal"
-            >
-              Close
-            </button>
-            <button
-              type="submit"
-              class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
-            >
-              Book Appointment
-            </button>
+          <div class="relative">
+            <select class="w-full bg-blue-900/50 border-2 border-teal-400/30 rounded-xl px-4 py-3 text-teal-200 font-semibold focus:ring-2 focus:ring-teal-400 shadow-lg appearance-none text-lg">
+              <option value="" disabled selected class="text-gray-900 font-semibold">Urgency Level</option>
+              <option value="routine" class="text-gray-900 font-semibold">Routine</option>
+              <option value="urgent" class="text-gray-900 font-semibold">Urgent</option>
+              <option value="emergency" class="text-gray-900 font-semibold">Emergency</option>
+            </select>
+            <div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+              <svg class="w-6 h-6 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
           </div>
-        </form>
+          <div class="relative">
+            <select class="w-full bg-blue-900/50 border-2 border-teal-400/30 rounded-xl px-4 py-3 text-teal-200 font-semibold focus:ring-2 focus:ring-teal-400 shadow-lg appearance-none text-lg">
+              <option value="" disabled selected class="text-gray-900 font-semibold">Time Preference</option>
+              <option value="morning" class="text-gray-900 font-semibold">Morning</option>
+              <option value="afternoon" class="text-gray-900 font-semibold">Afternoon</option>
+              <option value="evening" class="text-gray-900 font-semibold">Evening</option>
+            </select>
+            <div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+              <svg class="w-6 h-6 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
+          </div>
+        </div>
       </div>
+
+      <!-- Appointments Grid - Enhanced contrast and readability -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <% if (appointments && appointments.length > 0) { %>
+          <% appointments.forEach(appointment => { %>
+            <div class="bg-white bg-opacity-25 backdrop-blur-md rounded-2xl p-6 transform hover:scale-105 transition-all duration-300 shadow-xl">
+              <div class="flex justify-between items-start mb-4">
+                <div>
+                  <h3 class="text-xl font-bold text-white glass-text tracking-wide"><%= appointment.patient_name %></h3>
+                  <p class="text-white text-opacity-90 text-sm font-medium glass-text"><%= appointment.doctor %></p>
+                </div>
+                <span class="px-3 py-1 rounded-full text-xs font-bold shadow-lg
+                  <%= new Date(appointment.date) < new Date() ? 'bg-gray-500' : 'bg-teal-500' %> text-white">
+                  <%= new Date(appointment.date) < new Date() ? 'Past' : 'Upcoming' %>
+                </span>
+              </div>
+              
+              <div class="space-y-3 mb-4">
+                <div class="flex items-center text-white">
+                  <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  <span class="text-sm font-medium glass-text"><%= appointment.date %> at <%= appointment.time %></span>
+                </div>
+                <div class="flex items-center text-white">
+                  <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                  <span class="text-sm font-medium glass-text"><%= appointment.reason %></span>
+                </div>
+              </div>
+
+              <div class="flex space-x-2">
+                <button class="flex-1 px-3 py-2 bg-white bg-opacity-25 rounded-xl text-white text-sm font-bold hover:bg-opacity-35 transition-all shadow-lg">
+                  Reschedule
+                </button>
+                <a href="/appointment/cancel/<%= appointment.id %>"
+                  class="flex-1 px-3 py-2 bg-red-500 bg-opacity-90 rounded-xl text-white text-sm font-bold hover:bg-opacity-100 transition-all text-center shadow-lg">
+                  Cancel
+                </a>
+              </div>
+            </div>
+          <% }); %>
+        <% } else { %>
+          <div class="col-span-full text-center py-12">
+            <div class="inline-flex items-center justify-center w-16 h-16 bg-white bg-opacity-25 rounded-full mb-4 shadow-lg">
+              <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+              </svg>
+            </div>
+            <h3 class="text-xl font-bold text-white glass-text tracking-wide">No Appointments Found</h3>
+            <p class="text-white text-opacity-90 mt-2 font-medium glass-text">Schedule your first appointment to get started.</p>
+          </div>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Book Appointment Modal -->
+<div class="modal fade" id="bookAppointmentModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content bg-white rounded-lg shadow-xl">
+      <div class="modal-header px-6 py-4 border-b border-gray-200">
+        <h5 class="text-xl font-semibold text-gray-900">Book New Appointment</h5>
+        <button
+          type="button"
+          class="text-gray-400 hover:text-gray-500 focus:outline-none"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        >
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      <form action="/appointment/book" method="POST">
+        <div class="modal-body px-6 py-4">
+          <div class="mb-6">
+            <label for="patientName" class="block text-sm font-medium text-gray-700 mb-2">Patient Name</label>
+            <input
+              type="text"
+              id="patientName"
+              name="patientName"
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+              required
+            />
+          </div>
+          <div class="mb-6">
+            <label for="doctor" class="block text-sm font-medium text-gray-700 mb-2">Doctor</label>
+            <input
+              type="text"
+              id="doctor"
+              name="doctor"
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+              required
+            />
+          </div>
+          <div class="mb-6">
+            <label for="date" class="block text-sm font-medium text-gray-700 mb-2">Date</label>
+            <input
+              type="date"
+              id="date"
+              name="date"
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+              required
+            />
+          </div>
+          <div class="mb-6">
+            <label for="time" class="block text-sm font-medium text-gray-700 mb-2">Time</label>
+            <input
+              type="time"
+              id="time"
+              name="time"
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+              required
+            />
+          </div>
+          <div class="mb-6">
+            <label for="reason" class="block text-sm font-medium text-gray-700 mb-2">Reason</label>
+            <textarea
+              id="reason"
+              name="reason"
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+              rows="3"
+              required
+            ></textarea>
+          </div>
+        </div>
+        <div class="modal-footer px-6 py-4 border-t border-gray-200 flex justify-end space-x-4">
+          <button
+            type="button"
+            class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 transition-all"
+            data-bs-dismiss="modal"
+          >
+            Close
+          </button>
+          <button
+            type="submit"
+            class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+          >
+            Book Appointment
+          </button>
+        </div>
+      </form>
     </div>
   </div>
 </div>
