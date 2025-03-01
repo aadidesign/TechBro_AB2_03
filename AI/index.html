@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Clinical Decision Support</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 2rem;
+      }
+      textarea {
+        width: 100%;
+        font-size: 1rem;
+      }
+      button {
+        padding: 0.5rem 1rem;
+        font-size: 1rem;
+      }
+      .result {
+        margin-top: 1rem;
+        padding: 1rem;
+        background-color: #f1f1f1;
+        border-radius: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Clinical Decision Support System</h1>
+    <form id="patientForm">
+      <label for="patientData">Enter Patient Data:</label><br>
+      <textarea id="patientData" rows="4" placeholder="e.g., 45-year-old male with type 2 diabetes experiencing frequent hypoglycemia."></textarea><br><br>
+      <button type="submit">Generate Recommendation</button>
+    </form>
+
+    <h2>Recommendation</h2>
+    <div id="recommendation" class="result"></div>
+
+    <h2>Research Sources</h2>
+    <div id="sources" class="result"></div>
+
+    <script>
+      const form = document.getElementById('patientForm');
+      form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+
+        const patientData = document.getElementById('patientData').value;
+        if (!patientData) {
+          alert("Please enter patient data.");
+          return;
+        }
+
+        // Replace the URL with your server's address if different
+        const response = await fetch('https://congenial-journey-7gr54g5pj593w546-3000.app.github.dev/generate-recommendation', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ patientData })
+        });
+
+        if (!response.ok) {
+          document.getElementById('recommendation').innerText = "Error generating recommendation.";
+          return;
+        }
+
+        const data = await response.json();
+
+        // Display recommendation
+        document.getElementById('recommendation').innerText = data.recommendation.response.candidates[0].content.parts[0].text;
+
+        // Display research sources
+        let sourcesHTML = "";
+        if (data.sources && data.sources.length > 0) {
+          data.sources.forEach((src, index) => {
+            sourcesHTML += `<p><strong>Source ${index + 1}:</strong> ${src.title}<br>${src.abstract}</p>`;
+          });
+        } else {
+          sourcesHTML = "<p>No research sources found.</p>";
+        }
+        document.getElementById('sources').innerHTML = sourcesHTML;
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,21 @@
+[
+  {
+    "id": "P1001",
+    "name": "John Doe",
+    "age": "45",
+    "gender": "Male",
+    "blood_type": "O+",
+    "diagnoses": [
+      "Hypertension",
+      "Diabetes"
+    ],
+    "medications": [
+      "Metformin",
+      "Lisinopril"
+    ],
+    "allergies": [
+      "Penicillin"
+    ],
+    "last_visit": "2025-02-15"
+  }
+]

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Medical Records</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-6">
+    <h1 class="text-3xl font-bold text-center mb-4">Medical Records</h1>
+    <a href="/medical-records/add" class="bg-blue-500 text-white px-4 py-2 rounded">Add Medical Record</a>
+    <table class="w-full mt-4 border-collapse border border-gray-300">
+        <tr class="bg-gray-200">
+            <th class="border px-4 py-2">Patient</th>
+            <th class="border px-4 py-2">Diagnosis</th>
+            <th class="border px-4 py-2">Date</th>
+            <th class="border px-4 py-2">Lab Report</th>
+            <th class="border px-4 py-2">Actions</th>
+        </tr>
+        <% records.forEach(record => { %>
+        <tr class="bg-white">
+            <td class="border px-4 py-2"><%= record.patient_name %></td>
+            <td class="border px-4 py-2"><%= record.diagnosis %></td>
+            <td class="border px-4 py-2"><%= record.date %></td>
+            <td class="border px-4 py-2">
+                <% if (record.lab_reports) { %>
+                    <a href="/uploads/<%= record.lab_reports %>" class="text-blue-500" target="_blank">View Report</a>
+                <% } else { %>
+                    No Report
+                <% } %>
+            </td>
+            <td class="border px-4 py-2">
+                <a href="/medical-records/delete/<%= record.id %>" class="text-red-500">Delete</a>
+            </td>
+        </tr>
+        <% }) %>
+        <script src="https://cdn.tailwindcss.com"></script>
+
+    </table>
+</body>
+</html>
