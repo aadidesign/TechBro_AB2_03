@@ -3,10 +3,7 @@ const path = require("path");
 
 const recordsFile = path.join(__dirname, "../data/medicalRecords.json");
 
-const getRecords = () => {
-  if (!fs.existsSync(recordsFile)) return [];
-  return JSON.parse(fs.readFileSync(recordsFile));
-};
+
 
 const saveRecords = (data) => {
   fs.writeFileSync(recordsFile, JSON.stringify(data, null, 2));
@@ -15,15 +12,56 @@ const saveRecords = (data) => {
 // Get all medical records
 exports.getAllRecords = (req, res) => {
   const records = getRecords();
-  res.render("medicalRecords", { records });
+  res.render("medicalrecords", { records });
 };
 
 // Add a new medical record
 exports.addRecord = (req, res) => {
-  const records = getRecords();
-  const { patientName, diagnosis, prescription, doctor } = req.body;
-  const newRecord = { id: Date.now(), patientName, diagnosis, prescription, doctor };
-  records.push(newRecord);
-  saveRecords(records);
-  res.redirect("/medicalrecords");
+  try {
+    const records = getRecords();
+    const { patientName, doctor, date, diagnosis, severity } = req.body;
+    
+    const newRecord = {
+      id: Date.now(),
+      patient_name: patientName,
+      doctor,
+      date,
+      diagnosis,
+      severity,
+      created_at: new Date().toISOString()
+    };
+
+    records.push(newRecord);
+    saveRecords(records);
+    
+    req.flash('success', 'Medical record added successfully');
+    res.redirect("/medicalrecords");
+  } catch (error) {
+    console.error('Error adding medical record:', error);
+    req.flash('error', 'Failed to add medical record');
+    res.redirect("/medicalrecords");
+  }
 };
+
+// Helper functions
+function getRecords() {
+  try {
+    const data = fs.readFileSync(path.join(__dirname, '../data/medicalRecords.json'));
+    return JSON.parse(data);
+  } catch (error) {
+    console.error('Error reading records:', error);
+    return [];
+  }
+}
+
+function saveRecords(records) {
+  try {
+    fs.writeFileSync(
+      path.join(__dirname, '../data/medicalRecords.json'),
+      JSON.stringify(records, null, 2)
+    );
+  } catch (error) {
+    console.error('Error saving records:', error);
+    throw error;
+  }
+}
