@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Prescriptions</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-6">
+    <h1 class="text-3xl font-bold text-center mb-4">Prescriptions</h1>
+    <a href="/prescriptions/add" class="bg-blue-500 text-white px-4 py-2 rounded">Add Prescription</a>
+    <table class="w-full mt-4 border-collapse border border-gray-300">
+        <tr class="bg-gray-200">
+            <th class="border px-4 py-2">Patient</th>
+            <th class="border px-4 py-2">Doctor</th>
+            <th class="border px-4 py-2">Date</th>
+            <th class="border px-4 py-2">Actions</th>
+        </tr>
+        <% prescriptions.forEach(prescription => { %>
+        <tr class="bg-white">
+            <td class="border px-4 py-2"><%= prescription.patient_name %></td>
+            <td class="border px-4 py-2"><%= prescription.doctor_name %></td>
+            <td class="border px-4 py-2"><%= prescription.date %></td>
+            <td class="border px-4 py-2">
+                <a href="/prescriptions/<%= prescription.id %>" class="text-blue-500">View</a> |
+                <a href="/prescriptions/pdf/<%= prescription.id %>" class="text-green-500">Download PDF</a>
+            </td>
+        </tr>
+        <% }) %>
+    </table>
+</body>
+</html>

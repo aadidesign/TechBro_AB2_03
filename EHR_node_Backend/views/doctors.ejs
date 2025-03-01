@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Doctors & Staff</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-6">
+    <h1 class="text-3xl font-bold text-center mb-4">Doctors & Staff</h1>
+    <a href="/doctors/add" class="bg-blue-500 text-white px-4 py-2 rounded">Add Doctor/Staff</a>
+    <table class="w-full mt-4 border-collapse border border-gray-300">
+        <tr class="bg-gray-200">
+            <th class="border px-4 py-2">Name</th>
+            <th class="border px-4 py-2">Role</th>
+            <th class="border px-4 py-2">Specialization</th>
+            <th class="border px-4 py-2">Availability</th>
+            <th class="border px-4 py-2">Actions</th>
+        </tr>
+        <% doctors.forEach(doctor => { %>
+        <tr class="bg-white">
+            <td class="border px-4 py-2"><%= doctor.name %></td>
+            <td class="border px-4 py-2"><%= doctor.role %></td>
+            <td class="border px-4 py-2"><%= doctor.specialization %></td>
+            <td class="border px-4 py-2"><%= doctor.availability %></td>
+            <td class="border px-4 py-2">
+                <a href="/doctors/edit/<%= doctor.id %>" class="text-blue-500">Edit</a> |
+                <form action="/doctors/delete/<%= doctor.id %>" method="POST" style="display:inline;">
+                    <button type="submit" class="text-red-500">Delete</button>
+                </form>
+            </td>
+        </tr>
+        <% }) %>
+        <script src="https://cdn.tailwindcss.com"></script>
+
+    </table>
+</body>
+</html>

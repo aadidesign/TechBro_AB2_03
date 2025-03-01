@@ -1,40 +1,37 @@
-const express = require('express');
-const mongoose = require('mongoose');
-const cors = require('cors');
-const dotenv = require('dotenv');
+const express = require("express");
+const bodyParser = require("body-parser");
+const path = require("path");
 
-// Import routes
-const patientRoutes = require('./routes/patientRoutes');
-const doctorRoutes = require('./routes/doctorRoutes');
-const ehrRoutes = require('./routes/ehrRoutes');
-const appointmentRoutes = require('./routes/appointmentRoutes');
-const aiRecommendationRoutes = require('./routes/aiRecommendationRoutes');
+const patientRoutes = require("./routes/patientRoutes");
+const appointmentRoutes = require("./routes/appointmentRoutes");
+const medicalRecordRoutes = require("./routes/medicalRecordRoutes");
+const prescriptionRoutes = require("./routes/prescriptionRoutes");
+const labTestRoutes = require("./routes/labTestRoutes");
+const doctorRoutes = require("./routes/doctorRoutes");
+const reportsRoutes = require("./routes/reportsRoutes");
 
-// Configure environment variables
-dotenv.config();
+
 
 const app = express();
+const PORT = 3000;
 
-// Middleware
-app.use(cors());
-app.use(express.json());
+app.set("view engine", "ejs");
+app.use(express.static("public"));
+app.use(bodyParser.urlencoded({ extended: true }));
 
-// MongoDB connection
-mongoose.connect(process.env.MONGODB_URI || 'mongodb+srv://admin:admin@socialapp.76klw.mongodb.net/socialapp?retryWrites=true&w=majority', {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-});
+app.use("/", (req, res) => {
+  res.render("index");
+}
+);
 
-// Routes
-app.use('/api/patients', patientRoutes);
-app.use('/api/doctors', doctorRoutes);
-app.use('/api/ehr', ehrRoutes);
-app.use('/api/appointments', appointmentRoutes);
-app.use('/api/ai-recommendations', aiRecommendationRoutes);
+// Use Patient Routes
+app.use("/patient", patientRoutes);
+app.use("/appointment", appointmentRoutes);
+app.use("/medicalrecords", medicalRecordRoutes);
+app.use("/prescription", prescriptionRoutes);
+app.use("/labtests", labTestRoutes);
+app.use("/doctor", doctorRoutes);
+app.use("/reports", reportsRoutes);
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-});
 
-module.exports = app; 
+app.listen(PORT, () => console.log(`🚀 Server running on http://localhost:${PORT}`));

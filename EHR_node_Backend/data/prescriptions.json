@@ -1,0 +1,11 @@
+[
+    {
+      "id": "P1001",
+      "patient_name": "John Doe",
+      "doctor_name": "Dr. Smith",
+      "medications": ["Paracetamol", "Ibuprofen"],
+      "instructions": "Take one tablet twice daily after food.",
+      "date": "2025-03-02"
+    }
+  ]
+  

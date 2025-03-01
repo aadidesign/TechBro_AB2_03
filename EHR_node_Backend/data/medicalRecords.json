@@ -1,0 +1,12 @@
+[
+    {
+      "id": "R1001",
+      "patient_name": "Jane Doe",
+      "diagnosis": "Diabetes",
+      "medications": ["Metformin"],
+      "allergies": ["Peanuts"],
+      "lab_reports": "diabetes_report.pdf",
+      "date": "2025-03-02"
+    }
+  ]
+  
