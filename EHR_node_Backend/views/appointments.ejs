@@ -1,157 +1,350 @@
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-  <!-- Header with Book Appointment Button -->
-  <div class="flex flex-col md:flex-row justify-between items-center mb-8">
-    <h1 class="text-3xl font-bold text-gray-900 mb-4 md:mb-0">Appointment Management</h1>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <button
-      type="button"
-      class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md shadow-sm text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all"
-      data-bs-toggle="modal"
-      data-bs-target="#bookAppointmentModal"
-    >
-      <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-      </svg>
-      Book New Appointment
-    </button>
-  </div>
-
-  <!-- Appointments Table -->
-  <div class="bg-white rounded-xl shadow-lg overflow-hidden">
-    <% if (appointments && appointments.length > 0) { %>
-      <table class="min-w-full divide-y divide-gray-200">
-        <thead class="bg-gray-50">
-          <tr>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Patient Name</th>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Doctor</th>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Time</th>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Reason</th>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-          </tr>
-        </thead>
-        <tbody class="bg-white divide-y divide-gray-200">
-          <% appointments.forEach(appointment => { %>
-            <tr class="hover:bg-gray-50 transition-colors">
-              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900"><%= appointment.id %></td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><%= appointment.patient_name %></td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><%= appointment.doctor %></td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><%= appointment.date %></td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><%= appointment.time %></td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><%= appointment.reason %></td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                <a
-                  href="/appointment/cancel/<%= appointment.id %>"
-                  class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-full text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 transition-all"
-                >
-                  Cancel
-                </a>
-              </td>
-            </tr>
-          <% }); %>
-        </tbody>
-      </table>
-    <% } else { %>
-      <div class="p-6 text-center">
-        <div class="inline-flex items-center justify-center w-16 h-16 bg-blue-50 rounded-full">
-          <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-          </svg>
-        </div>
-        <h3 class="mt-4 text-lg font-medium text-gray-900">No Appointments Found</h3>
-        <p class="mt-1 text-sm text-gray-500">Book a new appointment to get started.</p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NeoMed Flux - Medical Records Management</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            sapphire: {
+              50: '#eaf5ff',
+              100: '#d9ebff',
+              200: '#bbd8ff',
+              300: '#8abbff',
+              400: '#5296ff',
+              500: '#2a75ff',
+              600: '#1555f7',
+              700: '#1143e3',
+              800: '#1539ba',
+              900: '#173793',
+            },
+            teal: {
+              50: '#edfafa',
+              400: '#38b2ac',
+              500: '#319795',
+              600: '#2c7a7b',
+            },
+            coral: {
+              400: '#ff6b6b',
+              500: '#ff5252',
+              600: '#ff3838',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+    
+    .glassmorphism {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .dark .glassmorphism {
+      background: rgba(17, 24, 39, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    
+    .sapphire-teal-gradient {
+      background: linear-gradient(135deg, #1143e3 0%, #38b2ac 100%);
+    }
+  </style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+  <!-- Top Navigation Bar -->
+  <nav class="bg-white dark:bg-gray-800 shadow-md px-4 py-3 flex items-center justify-between sticky top-0 z-50">
+    <div class="flex items-center space-x-2">
+      <div class="sapphire-teal-gradient p-2 rounded-lg">
+        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+        </svg>
       </div>
-    <% } %>
-  </div>
-
-  <!-- Book Appointment Modal -->
-  <div class="modal fade" id="bookAppointmentModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content bg-white rounded-lg shadow-xl">
-        <div class="modal-header px-6 py-4 border-b border-gray-200">
-          <h5 class="text-xl font-semibold text-gray-900">Book New Appointment</h5>
-          <button
-            type="button"
-            class="text-gray-400 hover:text-gray-500 focus:outline-none"
-            data-bs-dismiss="modal"
-            aria-label="Close"
-          >
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
+      <h1 class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-sapphire-700 to-teal-500 dark:from-sapphire-400 dark:to-teal-400">NeoMed Flux</h1>
+    </div>
+    
+    <div class="flex items-center space-x-4">
+      <!-- AI Assistant Button -->
+      <button class="flex items-center space-x-1 text-sapphire-700 dark:text-sapphire-400 hover:text-sapphire-800 dark:hover:text-sapphire-300 transition-colors">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+        </svg>
+        <span class="text-sm font-medium">AI Assistant</span>
+      </button>
+      
+      <!-- Notifications -->
+      <button class="relative text-gray-600 dark:text-gray-300 hover:text-sapphire-600 dark:hover:text-sapphire-400 transition-colors">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+        </svg>
+        <span class="absolute -top-1 -right-1 bg-coral-500 text-white text-xs font-bold rounded-full w-4 h-4 flex items-center justify-center">3</span>
+      </button>
+      
+      <!-- Theme Toggle -->
+      <button id="themeToggle" class="text-gray-600 dark:text-gray-300 hover:text-sapphire-600 dark:hover:text-sapphire-400 transition-colors">
+        <svg class="w-6 h-6 hidden dark:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+        </svg>
+        <svg class="w-6 h-6 block dark:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+        </svg>
+      </button>
+      
+      <!-- User Profile -->
+      <div class="flex items-center space-x-2">
+        <div class="w-8 h-8 rounded-full bg-sapphire-600 flex items-center justify-center text-white font-medium">
+          DR
         </div>
-        <form action="/appointment/book" method="POST">
-          <div class="modal-body px-6 py-4">
-            <div class="mb-6">
-              <label for="patientName" class="block text-sm font-medium text-gray-700 mb-2">Patient Name</label>
-              <input
-                type="text"
-                id="patientName"
-                name="patientName"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-                required
-              />
-            </div>
-            <div class="mb-6">
-              <label for="doctor" class="block text-sm font-medium text-gray-700 mb-2">Doctor</label>
-              <input
-                type="text"
-                id="doctor"
-                name="doctor"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-                required
-              />
-            </div>
-            <div class="mb-6">
-              <label for="date" class="block text-sm font-medium text-gray-700 mb-2">Date</label>
-              <input
-                type="date"
-                id="date"
-                name="date"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-                required
-              />
-            </div>
-            <div class="mb-6">
-              <label for="time" class="block text-sm font-medium text-gray-700 mb-2">Time</label>
-              <input
-                type="time"
-                id="time"
-                name="time"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-                required
-              />
-            </div>
-            <div class="mb-6">
-              <label for="reason" class="block text-sm font-medium text-gray-700 mb-2">Reason</label>
-              <textarea
-                id="reason"
-                name="reason"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-                rows="3"
-                required
-              ></textarea>
-            </div>
-          </div>
-          <div class="modal-footer px-6 py-4 border-t border-gray-200 flex justify-end space-x-4">
-            <button
-              type="button"
-              class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 transition-all"
-              data-bs-dismiss="modal"
-            >
-              Close
-            </button>
-            <button
-              type="submit"
-              class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
-            >
-              Book Appointment
-            </button>
-          </div>
-        </form>
+        <span class="text-sm font-medium text-gray-800 dark:text-gray-200">Dr. Reynolds</span>
       </div>
     </div>
-  </div>
-</div>
+  </nav>
+
+  <!-- Main Content Area -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Header with AI Summary and Action Button -->
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+      <div>
+        <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">Appointment Management</h1>
+        <div class="glassmorphism p-3 rounded-xl text-gray-700 dark:text-gray-200 text-sm max-w-2xl flex items-start space-x-2 animate-pulse">
+          <svg class="w-5 h-5 text-sapphire-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+          </svg>
+          <div>
+            <span class="font-semibold text-sapphire-600 dark:text-sapphire-400">AI Insight:</span> 
+            <span>Analyzing appointment patterns and suggesting optimal scheduling...</span>
+          </div>
+        </div>
+      </div>
+      
+      <button
+        type="button"
+        class="group inline-flex items-center px-4 py-2 bg-gradient-to-r from-sapphire-600 to-teal-500 border border-transparent rounded-xl shadow-lg text-sm font-medium text-white hover:from-sapphire-700 hover:to-teal-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sapphire-500 transition-all hover:scale-105 active:scale-95"
+        data-bs-toggle="modal"
+        data-bs-target="#bookAppointmentModal"
+      >
+        <svg class="w-5 h-5 mr-2 group-hover:animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+        </svg>
+        Book New Appointment
+      </button>
+    </div>
+
+    <!-- Smart Search Bar -->
+    <div class="mb-8">
+      <div class="relative glassmorphism rounded-xl overflow-hidden shadow-lg">
+        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+          <svg class="h-5 w-5 text-sapphire-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+        </div>
+        <input
+          type="text"
+          class="block w-full pl-10 pr-3 py-4 bg-transparent border-0 focus:ring-2 focus:ring-cyan-300 text-gray-900 dark:text-white placeholder-gray-500 focus:outline-none"
+          placeholder="Search by patient name, doctor, date, or reason (Try 'Dr. Smith' or 'Checkup')"
+        />
+        <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
+          <svg class="h-5 w-5 text-sapphire-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Filters -->
+    <div class="flex flex-wrap gap-3 mb-6">
+      <button class="px-4 py-2 bg-sapphire-100 dark:bg-sapphire-900 dark:bg-opacity-30 text-sapphire-700 dark:text-sapphire-300 rounded-lg text-sm font-medium hover:bg-sapphire-200 dark:hover:bg-sapphire-800 transition-colors">
+        Today
+      </button>
+      <button class="px-4 py-2 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+        Upcoming
+      </button>
+      <button class="px-4 py-2 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+        Past
+      </button>
+      <button class="px-4 py-2 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+        Priority
+      </button>
+      <button class="ml-auto px-4 py-2 text-sapphire-600 dark:text-sapphire-400 text-sm font-medium flex items-center">
+        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+        </svg>
+        More Filters
+      </button>
+    </div>
+
+    <!-- Appointments Table/Cards -->
+    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden glassmorphism">
+      <% if (appointments && appointments.length > 0) { %>
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+            <thead class="bg-gray-50 dark:bg-gray-900 dark:bg-opacity-40">
+              <tr>
+                <th scope="col" class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">ID</th>
+                <th scope="col" class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Patient</th>
+                <th scope="col" class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Doctor</th>
+                <th scope="col" class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Date</th>
+                <th scope="col" class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Time</th>
+                <th scope="col" class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Reason</th>
+                <th scope="col" class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Status</th>
+                <th scope="col" class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Actions</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200 dark:divide-gray-700 bg-opacity-40">
+              <% appointments.forEach((appointment, index) => { %>
+                <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 dark:hover:bg-opacity-50 transition-colors">
+                  <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white"><%= appointment.id %></td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="flex items-center">
+                      <div class="h-8 w-8 rounded-full bg-sapphire-100 dark:bg-sapphire-900 text-sapphire-700 dark:text-sapphire-300 flex items-center justify-center font-medium">
+                        <%= appointment.patient_name.charAt(0) %>
+                      </div>
+                      <div class="ml-3">
+                        <div class="text-sm font-medium text-gray-900 dark:text-white"><%= appointment.patient_name %></div>
+                        <div class="text-xs text-gray-500 dark:text-gray-400">Patient #<%= 10000 + index %></div>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm text-gray-900 dark:text-white"><%= appointment.doctor %></div>
+                    <div class="text-xs text-gray-500 dark:text-gray-400">Specialist</div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400"><%= appointment.date %></td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400"><%= appointment.time %></td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 max-w-xs truncate"><%= appointment.reason %></td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-900 dark:bg-opacity-60 dark:text-green-300">
+                      Confirmed
+                    </span>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                    <div class="flex space-x-2">
+                      <a
+                        href="/appointment/view/<%= appointment.id %>"
+                        class="inline-flex items-center p-1.5 text-sapphire-600 dark:text-sapphire-400 hover:bg-sapphire-50 dark:hover:bg-sapphire-900 dark:hover:bg-opacity-30 rounded-lg transition-colors"
+                        title="View Details"
+                      >
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                        </svg>
+                      </a>
+                      <a
+                        href="/appointment/edit/<%= appointment.id %>"
+                        class="inline-flex items-center p-1.5 text-teal-600 dark:text-teal-400 hover:bg-teal-50 dark:hover:bg-teal-900 dark:hover:bg-opacity-30 rounded-lg transition-colors"
+                        title="Edit Appointment"
+                      >
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        </svg>
+                      </a>
+                      <a
+                        href="/appointment/cancel/<%= appointment.id %>"
+                        class="inline-flex items-center p-1.5 text-coral-500 hover:bg-coral-50 dark:hover:bg-coral-900 dark:hover:bg-opacity-30 rounded-lg transition-colors"
+                        title="Cancel Appointment"
+                      >
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                      </a>
+                    </div>
+                  </td>
+                </tr>
+              <% }); %>
+            </tbody>
+          </table>
+        </div>
+      <% } else { %>
+        <div class="p-12 text-center">
+          <div class="inline-flex items-center justify-center w-20 h-20 bg-sapphire-100 dark:bg-sapphire-900 dark:bg-opacity-30 text-sapphire-600 dark:text-sapphire-400 rounded-full mb-6">
+            <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+            </svg>
+          </div>
+          <h3 class="text-xl font-medium text-gray-900 dark:text-white mb-2">No Appointments Found</h3>
+          <p class="text-gray-500 dark:text-gray-400 mb-6">Book a new appointment to get started.</p>
+          <button
+            type="button"
+            class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-sapphire-600 to-teal-500 border border-transparent rounded-xl shadow-lg text-sm font-medium text-white hover:from-sapphire-700 hover:to-teal-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sapphire-500 transition-all"
+            data-bs-toggle="modal"
+            data-bs-target="#bookAppointmentModal"
+          >
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+            </svg>
+            Book Your First Appointment
+          </button>
+        </div>
+      <% } %>
+
+    </div>
+
+    <!-- Analytics Metrics (Hidden on Mobile) -->
+    <div class="hidden lg:grid grid-cols-4 gap-6 mt-8">
+      <div class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg glassmorphism">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Today's Schedule</h3>
+          <span class="sapphire-teal-gradient text-white p-2 rounded-lg">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+          </span>
+        </div>
+        <div class="text-3xl font-bold text-gray-900 dark:text-white">12</div>
+        <div class="text-sm text-green-600 dark:text-green-400 flex items-center mt-1">
+          <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+          </svg>
+          <span>+2 from yesterday</span>
+        </div>
+      </div>
+      
+      <div class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg glassmorphism">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Weekly Total</h3>
+          <span class="sapphire-teal-gradient text-white p-2 rounded-lg">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+            </svg>
+          </span>
+        </div>
+        <div class="text-3xl font-bold text-gray-900 dark:text-white">58</div>
+        <div class="text-sm text-green-600 dark:text-green-400 flex items-center mt-1">
+          <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+          </svg>
+          <span>+8 from last week</span>
+        </div>
+      </div>
+      
+      <div class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg glassmorphism">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Completion Rate</h3>
+          <span class="sapphire-teal-gradient text-white p-2 rounded-lg">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </span>
+        </div>
+        <div class="text-3xl font-bold text-gray-900 dark:text-white">94.2%</div>
+        <div class="text-sm text-green-600 dark:text-green-400 flex items-center mt-1">
+          <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+          </svg>
+          <span>+2.3% from last month</span>
+        </div>
+      </div>
+      
+      <div class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg

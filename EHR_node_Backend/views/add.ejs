@@ -1,12 +1,128 @@
-<form action="/add" method="POST" class="max-w-lg mx-auto bg-white p-6 rounded shadow">
-    <input type="text" name="name" placeholder="Name" required class="border p-2 w-full mb-2">
-    <input type="number" name="age" placeholder="Age" required class="border p-2 w-full mb-2">
-    <input type="text" name="gender" placeholder="Gender" required class="border p-2 w-full mb-2">
-    <input type="text" name="blood_type" placeholder="Blood Type" class="border p-2 w-full mb-2">
-    <input type="text" name="diagnoses" placeholder="Diagnoses (comma-separated)" class="border p-2 w-full mb-2">
-    <input type="text" name="medications" placeholder="Medications" class="border p-2 w-full mb-2">
-    <input type="text" name="allergies" placeholder="Allergies" class="border p-2 w-full mb-2">
-    <input type="date" name="last_visit" required class="border p-2 w-full mb-2">
-    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Save</button>
-</form>
-<script src="https://cdn.tailwindcss.com"></script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NeoMed Flux - Add Patient</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(to bottom right, #1a365d, #0d9488);
+      min-height: 100vh;
+    }
+  </style>
+</head>
+<body class="p-6">
+  <div class="max-w-4xl mx-auto">
+    <!-- Header Section -->
+    <div class="mb-8 text-center">
+      <h1 class="text-3xl font-bold text-white mb-2">New Patient Onboarding</h1>
+      <p class="text-cyan-200">AI-Powered Healthcare Management System</p>
+    </div>
+
+    <!-- Main Form Card -->
+    <div class="backdrop-blur-xl bg-white bg-opacity-10 rounded-3xl shadow-2xl p-8 transition-all duration-300 hover:shadow-cyan-500/20">
+      <form action="/add" method="POST" class="space-y-6">
+        <!-- Patient Basic Info -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="space-y-2">
+            <label class="text-cyan-100 text-sm font-medium">Full Name</label>
+            <input type="text" name="name" required 
+              class="w-full bg-white bg-opacity-5 border border-cyan-200/20 rounded-xl p-3 text-white placeholder-cyan-200/50 focus:ring-2 focus:ring-cyan-400 transition-all duration-300"
+              placeholder="Enter patient name">
+          </div>
+          
+          <div class="space-y-2">
+            <label class="text-cyan-100 text-sm font-medium">Age</label>
+            <input type="number" name="age" required 
+              class="w-full bg-white bg-opacity-5 border border-cyan-200/20 rounded-xl p-3 text-white placeholder-cyan-200/50 focus:ring-2 focus:ring-cyan-400 transition-all duration-300"
+              placeholder="Enter age">
+          </div>
+        </div>
+
+        <!-- Medical Details -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="space-y-2">
+            <label class="text-cyan-100 text-sm font-medium">Gender</label>
+            <select name="gender" required 
+              class="w-full bg-white bg-opacity-5 border border-cyan-200/20 rounded-xl p-3 text-white focus:ring-2 focus:ring-cyan-400 transition-all duration-300">
+              <option value="">Select gender</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          
+          <div class="space-y-2">
+            <label class="text-cyan-100 text-sm font-medium">Blood Type</label>
+            <input type="text" name="blood_type" 
+              class="w-full bg-white bg-opacity-5 border border-cyan-200/20 rounded-xl p-3 text-white placeholder-cyan-200/50 focus:ring-2 focus:ring-cyan-400 transition-all duration-300"
+              placeholder="e.g., A+, B-, O+">
+          </div>
+        </div>
+
+        <!-- Medical History -->
+        <div class="space-y-2">
+          <label class="text-cyan-100 text-sm font-medium">Diagnoses</label>
+          <input type="text" name="diagnoses" 
+            class="w-full bg-white bg-opacity-5 border border-cyan-200/20 rounded-xl p-3 text-white placeholder-cyan-200/50 focus:ring-2 focus:ring-cyan-400 transition-all duration-300"
+            placeholder="Enter diagnoses (comma-separated)">
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="space-y-2">
+            <label class="text-cyan-100 text-sm font-medium">Medications</label>
+            <input type="text" name="medications" 
+              class="w-full bg-white bg-opacity-5 border border-cyan-200/20 rounded-xl p-3 text-white placeholder-cyan-200/50 focus:ring-2 focus:ring-cyan-400 transition-all duration-300"
+              placeholder="Current medications">
+          </div>
+          
+          <div class="space-y-2">
+            <label class="text-cyan-100 text-sm font-medium">Allergies</label>
+            <input type="text" name="allergies" 
+              class="w-full bg-white bg-opacity-5 border border-cyan-200/20 rounded-xl p-3 text-white placeholder-cyan-200/50 focus:ring-2 focus:ring-cyan-400 transition-all duration-300"
+              placeholder="Known allergies">
+          </div>
+        </div>
+
+        <div class="space-y-2">
+          <label class="text-cyan-100 text-sm font-medium">Last Visit Date</label>
+          <input type="date" name="last_visit" required 
+            class="w-full bg-white bg-opacity-5 border border-cyan-200/20 rounded-xl p-3 text-white focus:ring-2 focus:ring-cyan-400 transition-all duration-300">
+        </div>
+
+        <!-- Submit Button -->
+        <div class="flex justify-end space-x-4">
+          <button type="button" onclick="history.back()" 
+            class="px-6 py-3 rounded-xl bg-gray-500 bg-opacity-20 text-white hover:bg-opacity-30 transition-all duration-300">
+            Cancel
+          </button>
+          <button type="submit" 
+            class="px-6 py-3 rounded-xl bg-gradient-to-r from-cyan-500 to-teal-500 text-white hover:from-cyan-600 hover:to-teal-600 transform hover:scale-105 active:scale-95 transition-all duration-300">
+            Save Patient Data
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- AI Assistant Button -->
+    <div class="fixed bottom-6 right-6">
+      <button onclick="toggleAIAssistant()" 
+        class="rounded-full p-4 bg-gradient-to-r from-orange-400 to-pink-500 text-white shadow-lg hover:shadow-orange-500/50 transform hover:scale-110 transition-all duration-300">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <script>
+    function toggleAIAssistant() {
+      // AI Assistant functionality to be implemented
+      alert('AI Assistant coming soon!');
+    }
+  </script>
+</body>
+</html>
