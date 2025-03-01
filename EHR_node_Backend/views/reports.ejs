@@ -1,48 +1,93 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <title>Reports & Analytics</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-100 p-6">
-    <h1 class="text-3xl font-bold text-center mb-4">Clinic Reports & Analytics</h1>
-    
-    <div class="grid grid-cols-3 gap-4">
-        <div class="bg-white p-4 shadow rounded-lg">
-            <h2 class="text-xl font-semibold">Total Patients</h2>
-            <p class="text-2xl"><%= totalPatients %></p>
-        </div>
-        <div class="bg-white p-4 shadow rounded-lg">
-            <h2 class="text-xl font-semibold">Total Appointments</h2>
-            <p class="text-2xl"><%= totalAppointments %></p>
-        </div>
-        <div class="bg-white p-4 shadow rounded-lg">
-            <h2 class="text-xl font-semibold">Total Doctors</h2>
-            <p class="text-2xl"><%= totalDoctors %></p>
-        </div>
+<div class="row mb-4">
+    <div class="col-md-12">
+      <h1>Reports & Analytics</h1>
     </div>
-
-    <h2 class="text-2xl font-bold mt-6">Appointments Per Doctor</h2>
-    <table class="w-full mt-2 border-collapse border border-gray-300">
-        <tr class="bg-gray-200">
-            <th class="border px-4 py-2">Doctor</th>
-            <th class="border px-4 py-2">Appointments</th>
-        </tr>
-        <% Object.keys(appointmentsPerDoctor).forEach(doctor => { %>
-        <tr class="bg-white">
-            <td class="border px-4 py-2"><%= doctor %></td>
-            <td class="border px-4 py-2"><%= appointmentsPerDoctor[doctor] %></td>
-        </tr>
-        <% }) %>
-    </table>
-
-    <h2 class="text-2xl font-bold mt-6">Patient Age Distribution</h2>
-    <ul class="list-disc pl-6">
-        <% Object.keys(ageGroups).forEach(group => { %>
-            <li><%= group %>: <%= ageGroups[group] %> patients</li>
-        <% }) %>
-    </ul>
-    <script src="https://cdn.tailwindcss.com"></script>
-
-</body>
-</html>
+  </div>
+  
+  <!-- Summary Cards -->
+  <div class="row mb-4">
+    <div class="col-md-4">
+      <div class="card text-white bg-primary mb-3 dashboard-card">
+        <div class="card-header">Total Patients</div>
+        <div class="card-body">
+          <h1 class="card-title display-4"><%= totalPatients %></h1>
+          <p class="card-text">Registered patients in the system</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card text-white bg-success mb-3 dashboard-card">
+        <div class="card-header">Total Appointments</div>
+        <div class="card-body">
+          <h1 class="card-title display-4"><%= totalAppointments %></h1>
+          <p class="card-text">Scheduled appointments</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card text-white bg-info mb-3 dashboard-card">
+        <div class="card-header">Total Doctors</div>
+        <div class="card-body">
+          <h1 class="card-title display-4"><%= totalDoctors %></h1>
+          <p class="card-text">Medical staff</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Detailed Reports -->
+  <div class="row">
+    <div class="col-md-12">
+      <div class="card">
+        <div class="card-header bg-light">
+          <h5 class="mb-0">System Statistics</h5>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-bordered">
+              <thead class="table-light">
+                <tr>
+                  <th>Metric</th>
+                  <th>Value</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Total Patients</td>
+                  <td><%= totalPatients %></td>
+                </tr>
+                <tr>
+                  <td>Total Appointments</td>
+                  <td><%= totalAppointments %></td>
+                </tr>
+                <tr>
+                  <td>Total Doctors</td>
+                  <td><%= totalDoctors %></td>
+                </tr>
+                <tr>
+                  <td>Patient to Doctor Ratio</td>
+                  <td>
+                    <% if(totalDoctors > 0) { %>
+                      <%= (totalPatients / totalDoctors).toFixed(2) %>:1
+                    <% } else { %>
+                      N/A
+                    <% } %>
+                  </td>
+                </tr>
+                <tr>
+                  <td>Average Appointments per Patient</td>
+                  <td>
+                    <% if(totalPatients > 0) { %>
+                      <%= (totalAppointments / totalPatients).toFixed(2) %>
+                    <% } else { %>
+                      N/A
+                    <% } %>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>

@@ -5,17 +5,86 @@
     "age": "45",
     "gender": "Male",
     "blood_type": "O+",
-    "diagnoses": [
-      "Hypertension",
-      "Diabetes"
-    ],
-    "medications": [
-      "Metformin",
-      "Lisinopril"
-    ],
-    "allergies": [
-      "Penicillin"
-    ],
+    "diagnoses": ["Hypertension", "Diabetes"],
+    "medications": ["Metformin", "Lisinopril"],
+    "allergies": ["Penicillin"],
     "last_visit": "2025-02-15"
+  },
+  {
+    "id": "P1002",
+    "name": "Emma Johnson",
+    "age": "30",
+    "gender": "Female",
+    "blood_type": "A-",
+    "diagnoses": ["Asthma"],
+    "medications": ["Albuterol"],
+    "allergies": ["Dust", "Peanuts"],
+    "last_visit": "2025-01-20"
+  },
+  {
+    "id": "P1003",
+    "name": "Michael Brown",
+    "age": "50",
+    "gender": "Male",
+    "blood_type": "B+",
+    "diagnoses": ["High Cholesterol"],
+    "medications": ["Atorvastatin"],
+    "allergies": ["None"],
+    "last_visit": "2025-02-10"
+  },
+  {
+    "id": "P1004",
+    "name": "Sophia Davis",
+    "age": "28",
+    "gender": "Female",
+    "blood_type": "AB+",
+    "diagnoses": ["Thyroid Disorder"],
+    "medications": ["Levothyroxine"],
+    "allergies": ["Penicillin"],
+    "last_visit": "2025-01-05"
+  },
+  {
+    "id": "P1005",
+    "name": "Liam Wilson",
+    "age": "35",
+    "gender": "Male",
+    "blood_type": "O-",
+    "diagnoses": ["Anemia"],
+    "medications": ["Iron Supplements"],
+    "allergies": ["None"],
+    "last_visit": "2025-02-28"
+  },
+  {
+    "id": "P1006",
+    "name": "Olivia Martin",
+    "age": "40",
+    "gender": "Female",
+    "blood_type": "A+",
+    "diagnoses": ["Migraine"],
+    "medications": ["Sumatriptan"],
+    "allergies": ["Lactose"],
+    "last_visit": "2025-02-18"
+  },
+  {
+    "id": "P1007",
+    "name": "William Clark",
+    "age": "60",
+    "gender": "Male",
+    "blood_type": "B-",
+    "diagnoses": ["Arthritis"],
+    "medications": ["Ibuprofen"],
+    "allergies": ["Gluten"],
+    "last_visit": "2025-02-05"
+  },
+  {
+    "id": "P1008",
+    "name": "Ava Thompson",
+    "age": "55",
+    "gender": "Female",
+    "blood_type": "AB-",
+    "diagnoses": ["Osteoporosis"],
+    "medications": ["Calcium Supplements"],
+    "allergies": ["Shellfish"],
+    "last_visit": "2025-02-22"
   }
 ]

@@ -1,39 +1,76 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <title>Medical Records</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-100 p-6">
-    <h1 class="text-3xl font-bold text-center mb-4">Medical Records</h1>
-    <a href="/medical-records/add" class="bg-blue-500 text-white px-4 py-2 rounded">Add Medical Record</a>
-    <table class="w-full mt-4 border-collapse border border-gray-300">
-        <tr class="bg-gray-200">
-            <th class="border px-4 py-2">Patient</th>
-            <th class="border px-4 py-2">Diagnosis</th>
-            <th class="border px-4 py-2">Date</th>
-            <th class="border px-4 py-2">Lab Report</th>
-            <th class="border px-4 py-2">Actions</th>
-        </tr>
-        <% records.forEach(record => { %>
-        <tr class="bg-white">
-            <td class="border px-4 py-2"><%= record.patient_name %></td>
-            <td class="border px-4 py-2"><%= record.diagnosis %></td>
-            <td class="border px-4 py-2"><%= record.date %></td>
-            <td class="border px-4 py-2">
-                <% if (record.lab_reports) { %>
-                    <a href="/uploads/<%= record.lab_reports %>" class="text-blue-500" target="_blank">View Report</a>
-                <% } else { %>
-                    No Report
-                <% } %>
-            </td>
-            <td class="border px-4 py-2">
-                <a href="/medical-records/delete/<%= record.id %>" class="text-red-500">Delete</a>
-            </td>
-        </tr>
-        <% }) %>
-        <script src="https://cdn.tailwindcss.com"></script>
-
-    </table>
-</body>
-</html>
+<div class="row mb-4">
+    <div class="col-md-8">
+      <h1>Medical Records Management</h1>
+    </div>
+    <div class="col-md-4 text-end">
+      <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addRecordModal">
+        <i class="bi bi-plus-circle"></i> Add New Record
+      </button>
+    </div>
+  </div>
+  
+  <!-- Medical Records Table -->
+  <div class="table-container">
+    <% if (records && records.length > 0) { %>
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Patient Name</th>
+            <th>Diagnosis</th>
+            <th>Prescription</th>
+            <th>Doctor</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% records.forEach(record => { %>
+            <tr>
+              <td><%= record.id %></td>
+              <td><%= record.patientName %></td>
+              <td><%= record.diagnosis %></td>
+              <td><%= record.prescription %></td>
+              <td><%= record.doctor %></td>
+            </tr>
+          <% }); %>
+        </tbody>
+      </table>
+    <% } else { %>
+      <div class="alert alert-info">No medical records found. Add a new record to get started.</div>
+    <% } %>
+  </div>
+  
+  <!-- Add Medical Record Modal -->
+  <div class="modal fade" id="addRecordModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Add New Medical Record</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form action="/medicalrecords/add" method="POST">
+          <div class="modal-body">
+            <div class="mb-3">
+              <label for="patientName" class="form-label">Patient Name</label>
+              <input type="text" class="form-control" id="patientName" name="patientName" required>
+            </div>
+            <div class="mb-3">
+              <label for="diagnosis" class="form-label">Diagnosis</label>
+              <textarea class="form-control" id="diagnosis" name="diagnosis" rows="3" required></textarea>
+            </div>
+            <div class="mb-3">
+              <label for="prescription" class="form-label">Prescription</label>
+              <textarea class="form-control" id="prescription" name="prescription" rows="3" required></textarea>
+            </div>
+            <div class="mb-3">
+              <label for="doctor" class="form-label">Doctor</label>
+              <input type="text" class="form-control" id="doctor" name="doctor" required>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary">Save Record</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>

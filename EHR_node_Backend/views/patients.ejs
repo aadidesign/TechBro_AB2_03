@@ -1,35 +1,84 @@
-<%- include('layouts/header'); %>
-<div class="container mx-auto mt-6">
-  <h2 class="text-2xl font-bold mb-4">Patients</h2>
+<div class="row mb-4">
+    <div class="col-md-8">
+      <h1>Patient Management</h1>
+    </div>
+    <div class="col-md-4 text-end">
+      <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addPatientModal">
+        <i class="bi bi-plus-circle"></i> Add New Patient
+      </button>
+    </div>
+  </div>
   
-  <form action="/patient/add" method="POST" class="mb-4">
-    <input type="text" name="name" placeholder="Name" required class="border p-2">
-    <input type="number" name="age" placeholder="Age" required class="border p-2">
-    <input type="text" name="gender" placeholder="Gender" required class="border p-2">
-    <input type="text" name="contact" placeholder="Contact" required class="border p-2">
-    <button type="submit" class="bg-blue-500 text-white px-4 py-2">Add Patient</button>
-  </form>
-
-  <table class="table-auto w-full border-collapse border border-gray-400">
-    <tr class="bg-gray-200">
-      <th class="border p-2">Name</th>
-      <th class="border p-2">Age</th>
-      <th class="border p-2">Gender</th>
-      <th class="border p-2">Contact</th>
-      <th class="border p-2">Actions</th>
-    </tr>
-    <% patients.forEach(patient => { %>
-      <tr>
-        <td class="border p-2"><%= patient.name %></td>
-        <td class="border p-2"><%= patient.age %></td>
-        <td class="border p-2"><%= patient.gender %></td>
-        <td class="border p-2"><%= patient.contact %></td>
-        <td class="border p-2">
-          <a href="/patient/delete/<%= patient.id %>" class="text-red-500">Delete</a>
-        </td>
-      </tr>
-    <% }); %>
-    <script src="https://cdn.tailwindcss.com"></script>
-
-  </table>
-</div>
+  <!-- Patients Table -->
+  <div class="table-container">
+    <% if (patients && patients.length > 0) { %>
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Age</th>
+            <th>Gender</th>
+            <th>Contact</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% patients.forEach(patient => { %>
+            <tr>
+              <td><%= patient.id %></td>
+              <td><%= patient.name %></td>
+              <td><%= patient.age %></td>
+              <td><%= patient.gender %></td>
+              <td><%= patient.contact %></td>
+              <td>
+                <a href="/patient/delete/<%= patient.id %>" class="btn btn-sm btn-danger btn-action">Delete</a>
+              </td>
+            </tr>
+          <% }); %>
+        </tbody>
+      </table>
+    <% } else { %>
+      <div class="alert alert-info">No patients found. Add a new patient to get started.</div>
+    <% } %>
+  </div>
+  
+  <!-- Add Patient Modal -->
+  <div class="modal fade" id="addPatientModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Add New Patient</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form action="/patient/add" method="POST">
+          <div class="modal-body">
+            <div class="mb-3">
+              <label for="name" class="form-label">Patient Name</label>
+              <input type="text" class="form-control" id="name" name="name" required>
+            </div>
+            <div class="mb-3">
+              <label for="age" class="form-label">Age</label>
+              <input type="number" class="form-control" id="age" name="age" required>
+            </div>
+            <div class="mb-3">
+              <label for="gender" class="form-label">Gender</label>
+              <select class="form-select" id="gender" name="gender" required>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="contact" class="form-label">Contact Number</label>
+              <input type="text" class="form-control" id="contact" name="contact" required>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary">Save Patient</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>

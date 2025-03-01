@@ -1,34 +1,70 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <title>Lab Tests</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-100 p-6">
-    <h1 class="text-3xl font-bold text-center mb-4">Lab Tests</h1>
-    <a href="/lab-tests/add" class="bg-blue-500 text-white px-4 py-2 rounded">Add Lab Test</a>
-    <table class="w-full mt-4 border-collapse border border-gray-300">
-        <tr class="bg-gray-200">
-            <th class="border px-4 py-2">Patient</th>
-            <th class="border px-4 py-2">Doctor</th>
-            <th class="border px-4 py-2">Test</th>
-            <th class="border px-4 py-2">Status</th>
-            <th class="border px-4 py-2">Actions</th>
-        </tr>
-        <% labTests.forEach(test => { %>
-        <tr class="bg-white">
-            <td class="border px-4 py-2"><%= test.patient_name %></td>
-            <td class="border px-4 py-2"><%= test.doctor_name %></td>
-            <td class="border px-4 py-2"><%= test.test_name %></td>
-            <td class="border px-4 py-2"><%= test.status %></td>
-            <td class="border px-4 py-2">
-                <a href="/lab-tests/<%= test.id %>" class="text-blue-500">View</a>
-                <% if (test.resultFile) { %>
-                    | <a href="/lab-tests/download/<%= test.resultFile %>" class="text-green-500">Download Result</a>
-                <% } %>
-            </td>
-        </tr>
-        <% }) %>
-    </table>
-</body>
-</html>
+<div class="row mb-4">
+    <div class="col-md-8">
+      <h1>Lab Test Management</h1>
+    </div>
+    <div class="col-md-4 text-end">
+      <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addLabTestModal">
+        <i class="bi bi-plus-circle"></i> Add New Lab Test
+      </button>
+    </div>
+  </div>
+  
+  <!-- Lab Tests Table -->
+  <div class="table-container">
+    <% if (labTests && labTests.length > 0) { %>
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Patient Name</th>
+            <th>Test Name</th>
+            <th>Result</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% labTests.forEach(test => { %>
+            <tr>
+              <td><%= test.id %></td>
+              <td><%= test.patientName %></td>
+              <td><%= test.testName %></td>
+              <td><%= test.result %></td>
+            </tr>
+          <% }); %>
+        </tbody>
+      </table>
+    <% } else { %>
+      <div class="alert alert-info">No lab tests found. Add a new lab test to get started.</div>
+    <% } %>
+  </div>
+  
+  <!-- Add Lab Test Modal -->
+  <div class="modal fade" id="addLabTestModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Add New Lab Test</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form action="/labtests/add" method="POST">
+          <div class="modal-body">
+            <div class="mb-3">
+              <label for="patientName" class="form-label">Patient Name</label>
+              <input type="text" class="form-control" id="patientName" name="patientName" required>
+            </div>
+            <div class="mb-3">
+              <label for="testName" class="form-label">Test Name</label>
+              <input type="text" class="form-control" id="testName" name="testName" required>
+            </div>
+            <div class="mb-3">
+              <label for="result" class="form-label">Result</label>
+              <textarea class="form-control" id="result" name="result" rows="3" required></textarea>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary">Save Lab Test</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>

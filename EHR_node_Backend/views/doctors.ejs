@@ -1,36 +1,64 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <title>Doctors & Staff</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-100 p-6">
-    <h1 class="text-3xl font-bold text-center mb-4">Doctors & Staff</h1>
-    <a href="/doctors/add" class="bg-blue-500 text-white px-4 py-2 rounded">Add Doctor/Staff</a>
-    <table class="w-full mt-4 border-collapse border border-gray-300">
-        <tr class="bg-gray-200">
-            <th class="border px-4 py-2">Name</th>
-            <th class="border px-4 py-2">Role</th>
-            <th class="border px-4 py-2">Specialization</th>
-            <th class="border px-4 py-2">Availability</th>
-            <th class="border px-4 py-2">Actions</th>
-        </tr>
-        <% doctors.forEach(doctor => { %>
-        <tr class="bg-white">
-            <td class="border px-4 py-2"><%= doctor.name %></td>
-            <td class="border px-4 py-2"><%= doctor.role %></td>
-            <td class="border px-4 py-2"><%= doctor.specialization %></td>
-            <td class="border px-4 py-2"><%= doctor.availability %></td>
-            <td class="border px-4 py-2">
-                <a href="/doctors/edit/<%= doctor.id %>" class="text-blue-500">Edit</a> |
-                <form action="/doctors/delete/<%= doctor.id %>" method="POST" style="display:inline;">
-                    <button type="submit" class="text-red-500">Delete</button>
-                </form>
-            </td>
-        </tr>
-        <% }) %>
-        <script src="https://cdn.tailwindcss.com"></script>
-
-    </table>
-</body>
-</html>
+<div class="row mb-4">
+    <div class="col-md-8">
+      <h1>Doctor Management</h1>
+    </div>
+    <div class="col-md-4 text-end">
+      <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addDoctorModal">
+        <i class="bi bi-plus-circle"></i> Add New Doctor
+      </button>
+    </div>
+  </div>
+  
+  <!-- Doctors Table -->
+  <div class="table-container">
+    <% if (doctors && doctors.length > 0) { %>
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Specialization</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% doctors.forEach(doctor => { %>
+            <tr>
+              <td><%= doctor.id %></td>
+              <td><%= doctor.name %></td>
+              <td><%= doctor.specialization %></td>
+            </tr>
+          <% }); %>
+        </tbody>
+      </table>
+    <% } else { %>
+      <div class="alert alert-info">No doctors found. Add a new doctor to get started.</div>
+    <% } %>
+  </div>
+  
+  <!-- Add Doctor Modal -->
+  <div class="modal fade" id="addDoctorModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Add New Doctor</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form action="/doctor/add" method="POST">
+          <div class="modal-body">
+            <div class="mb-3">
+              <label for="name" class="form-label">Doctor Name</label>
+              <input type="text" class="form-control" id="name" name="name" required>
+            </div>
+            <div class="mb-3">
+              <label for="specialization" class="form-label">Specialization</label>
+              <input type="text" class="form-control" id="specialization" name="specialization" required>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary">Save Doctor</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>

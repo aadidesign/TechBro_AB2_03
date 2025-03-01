@@ -1,0 +1,76 @@
+<div class="row mb-4">
+  <div class="col-md-8">
+    <h1>Prescription Management</h1>
+  </div>
+  <div class="col-md-4 text-end">
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addPrescriptionModal">
+      <i class="bi bi-plus-circle"></i> Add New Prescription
+    </button>
+  </div>
+</div>
+
+<!-- Prescriptions Table -->
+<div class="table-container">
+  <% if (prescriptions && prescriptions.length > 0) { %>
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Patient Name</th>
+          <th>Doctor</th>
+          <th>Medicine</th>
+          <th>Dosage</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% prescriptions.forEach(prescription => { %>
+          <tr>
+            <td><%= prescription.id %></td>
+            <td><%= prescription.patientName %></td>
+            <td><%= prescription.doctor %></td>
+            <td><%= prescription.medicine %></td>
+            <td><%= prescription.dosage %></td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  <% } else { %>
+    <div class="alert alert-info">No prescriptions found. Add a new prescription to get started.</div>
+  <% } %>
+</div>
+
+<!-- Add Prescription Modal -->
+<div class="modal fade" id="addPrescriptionModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Add New Prescription</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form action="/prescription/add" method="POST">
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="patientName" class="form-label">Patient Name</label>
+            <input type="text" class="form-control" id="patientName" name="patientName" required>
+          </div>
+          <div class="mb-3">
+            <label for="doctor" class="form-label">Doctor</label>
+            <input type="text" class="form-control" id="doctor" name="doctor" required>
+          </div>
+          <div class="mb-3">
+            <label for="medicine" class="form-label">Medicine</label>
+            <input type="text" class="form-control" id="medicine" name="medicine" required>
+          </div>
+          <div class="mb-3">
+            <label for="dosage" class="form-label">Dosage</label>
+            <input type="text" class="form-control" id="dosage" name="dosage" required>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary">Save Prescription</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

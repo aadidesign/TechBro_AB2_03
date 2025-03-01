@@ -66,5 +66,42 @@
       </a>
     </div>
   </div>
-</body>
-</html>
+  
+  <!-- Today's Appointments -->
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header bg-light">
+          <h5 class="mb-0">Today's Appointments</h5>
+        </div>
+        <div class="card-body">
+          <% if (todayAppointments && todayAppointments.length > 0) { %>
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>Patient</th>
+                  <th>Doctor</th>
+                  <th>Time</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% todayAppointments.forEach(appointment => { %>
+                  <tr>
+                    <td><%= appointment.patientName %></td>
+                    <td><%= appointment.doctor %></td>
+                    <td><%= appointment.time %></td>
+                    <td>
+                      <a href="/appointment/cancel/<%= appointment.id %>" class="btn btn-sm btn-danger btn-action">Cancel</a>
+                    </td>
+                  </tr>
+                <% }); %>
+              </tbody>
+            </table>
+          <% } else { %>
+            <p class="text-center">No appointments scheduled for today.</p>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  </div>

@@ -1,17 +1,30 @@
 [
-    {
-      "id": "D1001",
-      "name": "Dr. Rahul Sharma",
-      "role": "Doctor",
-      "specialization": "Cardiologist",
-      "availability": "10 AM - 4 PM"
-    },
-    {
-      "id": "S2001",
-      "name": "Aarti Verma",
-      "role": "Nurse",
-      "specialization": "N/A",
-      "availability": "8 AM - 8 PM"
-    }
-  ]
-  
+  {
+    "id": "D1001",
+    "name": "Dr. Rahul Sharma",
+    "role": "Doctor",
+    "specialization": "Cardiologist",
+    "availability": "10 AM - 4 PM"
+  },
+  {
+    "id": "D1002",
+    "name": "Dr. Priya Mehta",
+    "role": "Doctor",
+    "specialization": "Pediatrician",
+    "availability": "9 AM - 3 PM"
+  },
+  {
+    "id": "S2001",
+    "name": "Aarti Verma",
+    "role": "Nurse",
+    "specialization": "N/A",
+    "availability": "8 AM - 8 PM"
+  },
+  {
+    "id": "S2002",
+    "name": "Rajesh Kumar",
+    "role": "Receptionist",
+    "specialization": "N/A",
+    "availability": "7 AM - 5 PM"
+  }
+]
