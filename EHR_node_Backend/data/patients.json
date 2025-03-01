@@ -8,7 +8,9 @@
     "diagnoses": ["Hypertension", "Diabetes"],
     "medications": ["Metformin", "Lisinopril"],
     "allergies": ["Penicillin"],
-    "last_visit": "2025-02-15"
+    "last_visit": "2025-02-15",
+    "condition": "Stable",
+    "aiSupportResponse": ""
   },
   {
     "id": "P1002",
@@ -19,7 +21,9 @@
     "diagnoses": ["Asthma"],
     "medications": ["Albuterol"],
     "allergies": ["Dust", "Peanuts"],
-    "last_visit": "2025-01-20"
+    "last_visit": "2025-01-20",
+    "condition": "Mild",
+    "aiSupportResponse": ""
   },
   {
     "id": "P1003",
@@ -30,7 +34,9 @@
     "diagnoses": ["High Cholesterol"],
     "medications": ["Atorvastatin"],
     "allergies": ["None"],
-    "last_visit": "2025-02-10"
+    "last_visit": "2025-02-10",
+    "condition": "Stable",
+    "aiSupportResponse": ""
   },
   {
     "id": "P1004",
@@ -41,7 +47,9 @@
     "diagnoses": ["Thyroid Disorder"],
     "medications": ["Levothyroxine"],
     "allergies": ["Penicillin"],
-    "last_visit": "2025-01-05"
+    "last_visit": "2025-01-05",
+    "condition": "Stable",
+    "aiSupportResponse": ""
   },
   {
     "id": "P1005",
@@ -52,7 +60,9 @@
     "diagnoses": ["Anemia"],
     "medications": ["Iron Supplements"],
     "allergies": ["None"],
-    "last_visit": "2025-02-28"
+    "last_visit": "2025-02-28",
+    "condition": "Improving",
+    "aiSupportResponse": ""
   },
   {
     "id": "P1006",
@@ -63,7 +73,9 @@
     "diagnoses": ["Migraine"],
     "medications": ["Sumatriptan"],
     "allergies": ["Lactose"],
-    "last_visit": "2025-02-18"
+    "last_visit": "2025-02-18",
+    "condition": "Mild",
+    "aiSupportResponse": ""
   },
   {
     "id": "P1007",
@@ -74,7 +86,9 @@
     "diagnoses": ["Arthritis"],
     "medications": ["Ibuprofen"],
     "allergies": ["Gluten"],
-    "last_visit": "2025-02-05"
+    "last_visit": "2025-02-05",
+    "condition": "Stable",
+    "aiSupportResponse": ""
   },
   {
     "id": "P1008",
@@ -85,6 +99,8 @@
     "diagnoses": ["Osteoporosis"],
     "medications": ["Calcium Supplements"],
     "allergies": ["Shellfish"],
-    "last_visit": "2025-02-22"
+    "last_visit": "2025-02-22",
+    "condition": "Stable",
+    "aiSupportResponse": ""
   }
 ]
