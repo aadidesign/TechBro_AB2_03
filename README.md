@@ -3,6 +3,8 @@ Problem Statement (PS 3)
 Enhancing Clinical Decision Support Systems (CDSS) with Retrieval-Augmented Generation (RAG) Model
 Hackathon Track: Healthcare AI & Clinical Decision Support Systems (CDSS)
 
+Project doc link : https://docs.google.com/document/d/1gn97QBG0VTB23qAYvzLxduZRTalSbvQUQzQpZba-cxQ/edit?addon_store&tab=t.0 
+
 Problem Description
 Healthcare professionals face challenges in accessing accurate, real-time, and relevant medical information for clinical decision-making. Traditional Clinical Decision Support Systems (CDSS) rely on static databases and predefined rules, limiting their adaptability to evolving medical research and guidelines.
 
