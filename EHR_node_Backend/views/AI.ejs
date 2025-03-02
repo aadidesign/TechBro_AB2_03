@@ -161,7 +161,7 @@
         </div>
       `;
     } else {
-      fetch('https://congenial-journey-7gr54g5pj593w546-3010.app.github.dev/generate-recommendation', {
+      fetch('http://localhost:3010/generate-recommendation', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ patientId: patientId }),
