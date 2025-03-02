@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -38,26 +37,22 @@
     <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
       <div>
         <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">Medical Records Management</h1>
-        <div
-          class="glassmorphism p-3 rounded-xl text-gray-700 dark:text-gray-200 text-sm max-w-2xl flex items-start space-x-2 animate-pulse">
-          <svg class="w-5 h-5 text-sapphire-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor"
-            viewBox="0 0 24 24">
+        <div class="glassmorphism p-3 rounded-xl text-gray-700 dark:text-gray-200 text-sm max-w-2xl flex items-start space-x-2 animate-pulse">
+          <svg class="w-5 h-5 text-blue-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
           </svg>
           <div>
-            <span class="font-semibold text-sapphire-600 dark:text-sapphire-400">AI Insight:</span>
+            <span class="font-semibold text-blue-600 dark:text-blue-400">AI Insight:</span>
             <span>Analyzing patient records for trends and risk factors...</span>
           </div>
         </div>
       </div>
 
-      <button type="button"
-        class="group inline-flex items-center px-4 py-2 bg-gradient-to-r from-sapphire-600 to-teal-500 border border-transparent rounded-xl shadow-lg text-sm font-medium text-white hover:from-sapphire-700 hover:to-teal-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sapphire-500 transition-all hover:scale-105 active:scale-95"
-        onclick="openModal()">
+      <button type="button" class="group inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-600 to-teal-500 border border-transparent rounded-xl shadow-lg text-sm font-medium text-white hover:from-blue-700 hover:to-teal-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all hover:scale-105 active:scale-95" onclick="openModal()">
         <svg class="w-5 h-5 mr-2 group-hover:animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
         </svg>
-        Add New Record
+        Add New Patient
       </button>
     </div>
 
@@ -65,18 +60,14 @@
     <div class="mb-8">
       <div class="relative glassmorphism rounded-xl overflow-hidden shadow-lg">
         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-          <svg class="h-5 w-5 text-sapphire-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          <svg class="h-5 w-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
         </div>
-        <input type="text" id="searchInput"
-          class="block w-full pl-10 pr-3 py-4 bg-transparent border-0 focus:ring-2 focus:ring-cyan-300 text-gray-900 dark:text-white placeholder-gray-500 focus:outline-none"
-          placeholder="Search by patient name, diagnosis, or record ID..." oninput="filterRecords()" />
+        <input type="text" id="searchInput" class="block w-full pl-10 pr-3 py-4 bg-transparent border-0 focus:ring-2 focus:ring-cyan-300 text-gray-900 dark:text-white placeholder-gray-500 focus:outline-none" placeholder="Search by patient name, age, or gender..." oninput="filterPatients()" />
         <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
-          <svg class="h-5 w-5 text-sapphire-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+          <svg class="h-5 w-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
           </svg>
         </div>
       </div>
@@ -84,108 +75,89 @@
 
     <!-- Quick Filters -->
     <div class="flex flex-wrap gap-3 mb-6">
-      <button
-        class="px-4 py-2 bg-sapphire-100 dark:bg-sapphire-900 dark:bg-opacity-30 text-sapphire-700 dark:text-sapphire-300 rounded-lg text-sm font-medium hover:bg-sapphire-200 dark:hover:bg-sapphire-800 transition-colors">
-        Today
+      <button onclick="filterByStatus('all')" class="px-4 py-2 bg-blue-100 dark:bg-blue-900 dark:bg-opacity-30 text-blue-700 dark:text-blue-300 rounded-lg text-sm font-medium hover:bg-blue-200 dark:hover:bg-blue-800 transition-colors filter-btn active">
+        All
       </button>
-      <button
-        class="px-4 py-2 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
-        Upcoming
+      <button onclick="filterByStatus('male')" class="px-4 py-2 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors filter-btn">
+        Male
       </button>
-      <button
-        class="px-4 py-2 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
-        Past
+      <button onclick="filterByStatus('female')" class="px-4 py-2 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors filter-btn">
+        Female
       </button>
-      <button
-        class="px-4 py-2 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
-        Priority
-      </button>
-      <button class="ml-auto px-4 py-2 text-sapphire-600 dark:text-sapphire-400 text-sm font-medium flex items-center">
+      <button onclick="sortPatientsByAge()" class="ml-auto px-4 py-2 text-blue-600 dark:text-blue-400 text-sm font-medium flex items-center">
         <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-            d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
         </svg>
-        More Filters
+        Sort by Age
       </button>
     </div>
 
     <!-- Patient Records Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      <!-- Sample Patient Record Card -->
-      <div class="glassmorphism p-6 rounded-2xl shadow-lg hover:shadow-xl transition-shadow">
-        <div class="flex items-center justify-between mb-4">
-          <div class="text-lg font-semibold text-gray-900 dark:text-white">John Doe</div>
-          <span
-            class="px-2 py-1 text-xs font-semibold bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300 rounded-full">
-            Stable
-          </span>
-        </div>
-        <div class="text-sm text-gray-600 dark:text-gray-400 mb-4">
-          <p><strong>Age:</strong> 35</p>
-          <p><strong>Gender:</strong> Male</p>
-          <p><strong>Last Visit:</strong> 2023-10-15</p>
-        </div>
-        <div class="flex space-x-2">
-          <button
-            class="text-sapphire-600 dark:text-sapphire-400 hover:text-sapphire-700 dark:hover:text-sapphire-500 transition-colors">
-            View Details
-          </button>
-          <button class="text-coral-500 hover:text-coral-600 transition-colors">
-            Request AI Support
-          </button>
+    <div id="patientGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <!-- Patient cards will be dynamically inserted here -->
+      <div class="glassmorphism p-6 rounded-2xl shadow-lg text-center flex items-center justify-center h-48 bg-gray-100 dark:bg-gray-800 dark:bg-opacity-30">
+        <div class="text-gray-500 dark:text-gray-400">
+          <svg class="w-12 h-12 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+          </svg>
+          <p>No patients found</p>
+          <p class="text-sm">Click "Add New Patient" to get started</p>
         </div>
       </div>
-      <!-- Add more patient cards here -->
     </div>
 
     <!-- Dynamic Health Charts -->
     <div class="mt-8">
-      <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Health Trends</h2>
+      <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Demographics Overview</h2>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div class="glassmorphism p-6 rounded-2xl shadow-lg">
-          <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Blood Pressure</h3>
-          <div class="h-40 bg-gray-100 dark:bg-gray-800 rounded-lg animate-pulse"></div>
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Age Distribution</h3>
+          <div id="ageChart" class="h-40 bg-gray-100 dark:bg-gray-800 rounded-lg flex items-center justify-center">
+            <p class="text-gray-500 dark:text-gray-400">Chart will appear when patients are added</p>
+          </div>
         </div>
         <div class="glassmorphism p-6 rounded-2xl shadow-lg">
-          <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Heart Rate</h3>
-          <div class="h-40 bg-gray-100 dark:bg-gray-800 rounded-lg animate-pulse"></div>
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Gender Ratio</h3>
+          <div id="genderChart" class="h-40 bg-gray-100 dark:bg-gray-800 rounded-lg flex items-center justify-center">
+            <p class="text-gray-500 dark:text-gray-400">Chart will appear when patients are added</p>
+          </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Add Record Modal -->
-  <div id="addRecordModal" class="fixed inset-0 flex items-center justify-center z-50 hidden">
+  <!-- Add Patient Modal -->
+  <div id="addPatientModal" class="fixed inset-0 flex items-center justify-center z-50 hidden">
     <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg w-full max-w-md relative z-10">
       <div class="flex justify-between items-center mb-4">
-        <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Add New Record</h2>
-        <button id="closeModal" class="text-gray-700 dark:text-gray-300 text-2xl leading-none"
-          onclick="closeModal()">&times;</button>
+        <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Add New Patient</h2>
+        <button class="text-gray-700 dark:text-gray-300 text-2xl leading-none" onclick="closeModal()">&times;</button>
       </div>
-      <form action="/record/add" method="POST">
+      <form id="addPatientForm" onsubmit="addPatient(event)">
         <div class="mb-4">
-          <label for="patientName" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Patient
-            Name</label>
-          <input type="text" name="patientName" id="patientName"
-            class="mt-1 block w-full border border-gray-300 dark:border-gray-700 rounded-md p-2 bg-gray-50 dark:bg-gray-700 dark:text-white"
-            placeholder="Enter patient name" required>
+          <label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Patient Name</label>
+          <input type="text" name="name" id="name" class="mt-1 block w-full border border-gray-300 dark:border-gray-700 rounded-md p-2 bg-gray-50 dark:bg-gray-700 dark:text-white" placeholder="Enter patient name" required>
         </div>
         <div class="mb-4">
-          <label for="diagnosis" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Diagnosis</label>
-          <input type="text" name="diagnosis" id="diagnosis"
-            class="mt-1 block w-full border border-gray-300 dark:border-gray-700 rounded-md p-2 bg-gray-50 dark:bg-gray-700 dark:text-white"
-            placeholder="Enter diagnosis" required>
+          <label for="age" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Age</label>
+          <input type="number" name="age" id="age" class="mt-1 block w-full border border-gray-300 dark:border-gray-700 rounded-md p-2 bg-gray-50 dark:bg-gray-700 dark:text-white" placeholder="Enter age" required min="0" max="120">
         </div>
         <div class="mb-4">
-          <label for="treatment" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Treatment</label>
-          <textarea name="treatment" id="treatment" rows="3"
-            class="mt-1 block w-full border border-gray-300 dark:border-gray-700 rounded-md p-2 bg-gray-50 dark:bg-gray-700 dark:text-white"
-            placeholder="Enter treatment details" required></textarea>
+          <label for="gender" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Gender</label>
+          <select name="gender" id="gender" class="mt-1 block w-full border border-gray-300 dark:border-gray-700 rounded-md p-2 bg-gray-50 dark:bg-gray-700 dark:text-white" required>
+            <option value="">Select gender</option>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <div class="mb-4">
+          <label for="contact" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Contact</label>
+          <input type="text" name="contact" id="contact" class="mt-1 block w-full border border-gray-300 dark:border-gray-700 rounded-md p-2 bg-gray-50 dark:bg-gray-700 dark:text-white" placeholder="Enter contact information" required>
         </div>
         <div class="flex justify-end">
-          <button type="submit"
-            class="px-4 py-2 bg-gradient-to-r from-sapphire-600 to-teal-500 text-white rounded-lg shadow hover:from-sapphire-700 hover:to-teal-600 transition-all">
-            Save Record
+          <button type="submit" class="px-4 py-2 bg-gradient-to-r from-blue-600 to-teal-500 text-white rounded-lg shadow hover:from-blue-700 hover:to-teal-600 transition-all">
+            Save Patient
           </button>
         </div>
       </form>
@@ -194,127 +166,359 @@
     <div class="fixed inset-0 bg-black opacity-50" onclick="closeModal()"></div>
   </div>
 
-
+  <!-- Delete Confirmation Modal -->
+  <div id="deleteModal" class="fixed inset-0 flex items-center justify-center z-50 hidden">
+    <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg w-full max-w-md relative z-10">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Confirm Deletion</h2>
+        <button class="text-gray-700 dark:text-gray-300 text-2xl leading-none" onclick="closeDeleteModal()">&times;</button>
+      </div>
+      <p class="text-gray-700 dark:text-gray-300 mb-4">Are you sure you want to delete this patient record? This action cannot be undone.</p>
+      <div class="flex justify-end space-x-2">
+        <button class="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-all" onclick="closeDeleteModal()">
+          Cancel
+        </button>
+        <button id="confirmDelete" class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-all">
+          Delete
+        </button>
+      </div>
+    </div>
+    <!-- Modal Overlay -->
+    <div class="fixed inset-0 bg-black opacity-50" onclick="closeDeleteModal()"></div>
+  </div>
 
   <script>
-    const parseAIResponse = (rawResponse) => {
+    // Global variables
+    let patients = [];
+    let currentFilter = 'all';
+    let currentSort = 'none';
+    let patientToDelete = null;
+
+    // DOM ready function
+    document.addEventListener('DOMContentLoaded', function () {
+      fetchPatients();
+    });
+
+    // Modal functions
+    function openModal() {
+      document.getElementById('addPatientModal').classList.remove('hidden');
+    }
+
+    function closeModal() {
+      document.getElementById('addPatientModal').classList.add('hidden');
+      document.getElementById('addPatientForm').reset();
+    }
+
+    function openDeleteModal(patientId) {
+      patientToDelete = patientId;
+      document.getElementById('deleteModal').classList.remove('hidden');
+      document.getElementById('confirmDelete').onclick = function () {
+        deletePatient(patientToDelete);
+      };
+    }
+
+    function closeDeleteModal() {
+      document.getElementById('deleteModal').classList.add('hidden');
+      patientToDelete = null;
+    }
+
+    // Fetch patients from the server
+    async function fetchPatients() {
       try {
-        return JSON.parse(
-          rawResponse.recommendation
-            .replace(/```(json)?/g, '')
-            .trim()
-        );
+        const response = await fetch('/patient/get'); // Replace with your API endpoint
+        if (!response.ok) {
+          throw new Error('Failed to fetch patients');
+        }
+        patients = await response.json();
+        renderPatients();
+        updateCharts();
       } catch (error) {
-        console.error('Failed to parse AI response:', error);
-        return null;
+        console.error('Error fetching patients:', error);
+        // Show error message to user
       }
-    };
-
-    function showDetails(patientId) {
-      const modal = new bootstrap.Modal(document.getElementById(`detailsModal-${patientId}`));
-      modal.show();
     }
 
-    function showCondition(patientId) {
-      const modal = new bootstrap.Modal(document.getElementById(`conditionModal-${patientId}`));
-      modal.show();
-    }
+    // Add a new patient
+    async function addPatient(event) {
+      event.preventDefault();
 
-    async function requestAISupport(patientId) {
+      const form = document.getElementById('addPatientForm');
+      const formData = new FormData(form);
+      console.log(formData);
+
+      const newPatient = {
+        "name": formData.get('name'),
+        "age": parseInt(formData.get('age')),
+        "gender": formData.get('gender'),
+        "contact": formData.get('contact')
+      };
+
       try {
-        const response = await fetch(`http://localhost:3010/generate-recommendation`, {
+        const response = await fetch('/patient/add', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ patientId })
+          body: JSON.stringify(newPatient)
         });
+        
+        
 
-        if (!response.ok) throw new Error('Network response was not ok');
-
-        const data = await response.json();
-
-        // Parse the AI response
-        const parseAIResponse = (rawResponse) => {
-          try {
-            return JSON.parse(
-              rawResponse.recommendation
-                .replace(/```(json)?/g, '')
-                .trim()
-            );
-          } catch (error) {
-            console.error('Failed to parse AI response:', error);
-            return null;
-          }
-        };
-
-        const recommendation = parseAIResponse(data);
-
-        // Get the modal elements
-        const modalElement = document.getElementById(`aiSupportModal-${patientId}`);
-        const modalBody = modalElement.querySelector('.modal-body');
-
-        // Clear previous content
-        modalBody.innerHTML = '';
-
-        if (recommendation) {
-          // Build the modal content
-          const content = `
-          <h5 class="mb-3">Recommendation for ${recommendation.patient_name}</h5>
-          <p><strong>Summary:</strong> ${recommendation.recommendation_summary}</p>
-          
-          <div class="row mt-4">
-            <div class="col-md-6">
-              <h6>Treatment Plan</h6>
-              <ul class="list-group mb-3">
-                <li class="list-group-item">
-                  <strong>Medications:</strong>
-                  ${recommendation.treatment_plan.medications.map(m => `<div>${m}</div>`).join('')}
-                </li>
-                <li class="list-group-item">
-                  <strong>Lifestyle Changes:</strong>
-                  ${recommendation.treatment_plan.lifestyle_changes.map(l => `<div>${l}</div>`).join('')}
-                </li>
-              </ul>
-            </div>
-            
-            <div class="col-md-6">
-              <h6>Monitoring Instructions</h6>
-              <ul class="list-group">
-                ${recommendation.treatment_plan.monitoring_instructions.map(m => `
-                  <li class="list-group-item">${m}</li>
-                `).join('')}
-              </ul>
-            </div>
-          </div>
-          
-          <div class="mt-4">
-            <p><strong>Confidence Score:</strong> ${recommendation.confidence_score}%</p>
-            <p><strong>Risk Assessment:</strong> ${recommendation.risk_assessment}</p>
-            <p><strong>Follow-up Schedule:</strong> ${recommendation.followup_schedule}</p>
-          </div>
-        `;
-
-          modalBody.innerHTML = content;
-        } else {
-          modalBody.innerHTML = `<div class="alert alert-danger">Error parsing AI response</div>`;
+        if (!response.ok) {
+          throw new Error('Failed to add patient');
         }
 
-        // Show the modal
-        new bootstrap.Modal(modalElement).show();
+        const addedPatient = await response.json();
+        patients.push(addedPatient);
+        closeModal();
+        renderPatients();
+        updateCharts();
 
+        // Show success notification
+        showNotification('Patient added successfully');
       } catch (error) {
-        console.error('Error:', error);
-        alert('Error generating AI recommendation');
+        console.error('Error adding patient:', error);
+        // Show error message to user
+      }
+    }
+
+    // Delete a patient
+    async function deletePatient(patientId) {
+      try {
+        const response = await fetch(`/patient/${patientId}`, {
+          method: 'DELETE'
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to delete patient');
+        }
+
+        patients = patients.filter(p => p.id !== patientId);
+        closeDeleteModal();
+        renderPatients();
+        updateCharts();
+
+        // Show success notification
+        showNotification('Patient deleted successfully');
+      } catch (error) {
+        console.error('Error deleting patient:', error);
+        // Show error message to user
+      }
+    }
+
+    // Render patients to the grid
+    function renderPatients() {
+      const grid = document.getElementById('patientGrid');
+      grid.innerHTML = '';
+
+      // Filter patients based on current filter
+      let filteredPatients = patients;
+      if (currentFilter !== 'all') {
+        filteredPatients = patients.filter(p => p.gender === currentFilter);
       }
 
-      function closeModal() {
-        document.getElementById('addRecordModal').classList.add('hidden');
+      // Sort patients if needed
+      if (currentSort === 'age') {
+        filteredPatients = [...filteredPatients].sort((a, b) => a.age - b.age);
       }
 
-      function filterRecords() {
-        const searchInput = document.getElementById('searchInput').value.toLowerCase();
-        // Add filtering logic here
+      // Search filter
+      const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+      if (searchTerm) {
+        filteredPatients = filteredPatients.filter(p =>
+          p.name.toLowerCase().includes(searchTerm) ||
+          p.age.toString().includes(searchTerm) ||
+          p.gender.toLowerCase().includes(searchTerm)
+        );
       }
+
+      if (filteredPatients.length === 0) {
+        grid.innerHTML = `
+          <div class="glassmorphism p-6 rounded-2xl shadow-lg text-center flex items-center justify-center h-48 col-span-full">
+            <div class="text-gray-500 dark:text-gray-400">
+              <svg class="w-12 h-12 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M12 12h.01M12 12h.01" />
+              </svg>
+              <p>No patients found</p>
+              <p class="text-sm mt-1">Try changing your search or filters</p>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      // Create patient cards
+      filteredPatients.forEach(patient => {
+        const card = document.createElement('div');
+        card.className = 'glassmorphism p-6 rounded-2xl shadow-lg hover:shadow-xl transition-shadow';
+        card.innerHTML = `
+          <div class="flex items-center justify-between mb-4">
+            <div class="text-lg font-semibold text-gray-900 dark:text-white">${patient.name}</div>
+            <span class="px-2 py-1 text-xs font-semibold ${patient.gender === 'male' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300' :
+            patient.gender === 'female' ? 'bg-pink-100 text-pink-800 dark:bg-pink-900 dark:text-pink-300' :
+              'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300'
+          } rounded-full">
+              ${patient.gender.charAt(0).toUpperCase() + patient.gender.slice(1)}
+            </span>
+          </div>
+          <div class="text-sm text-gray-600 dark:text-gray-400 mb-4">
+            <p><strong>Age:</strong> ${patient.age}</p>
+            <p><strong>Contact:</strong> ${patient.contact}</p>
+            <p><strong>ID:</strong> #${patient.id}</p>
+          </div>
+          <div class="flex space-x-2">
+            <button class="group inline-flex items-center px-3 py-1 bg-gradient-to-r from-green-400 to-blue-500 border border-transparent rounded-full shadow-lg text-xs font-medium text-white hover:from-green-500 hover:to-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-400 transition-all hover:scale-105 active:scale-95" onclick="window.location.href='/AI?patientId=${patient.id}'">
+              <svg class="w-4 h-4 mr-1 group-hover:animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+              </svg>
+              Show AI Suggestion
+            </button>
+            <button onclick="openDeleteModal(${patient.id})" class="text-red-500 hover:text-red-600 transition-colors">
+              Delete
+            </button>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    // Filter patients by status
+    function filterByStatus(status) {
+      currentFilter = status;
+
+      // Update active button styling
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.classList.remove('bg-blue-100', 'dark:bg-blue-900', 'text-blue-700', 'dark:text-blue-300');
+        btn.classList.add('bg-gray-100', 'dark:bg-gray-800', 'text-gray-700', 'dark:text-gray-300');
+      });
+
+      event.target.classList.remove('bg-gray-100', 'dark:bg-gray-800', 'text-gray-700', 'dark:text-gray-300');
+      event.target.classList.add('bg-blue-100', 'dark:bg-blue-900', 'text-blue-700', 'dark:text-blue-300');
+
+      renderPatients();
+    }
+
+    // Sort patients by age
+    function sortPatientsByAge() {
+      currentSort = currentSort === 'age' ? 'none' : 'age';
+      renderPatients();
+    }
+
+    // Search filtering
+    function filterPatients() {
+      renderPatients();
+    }
+
+    // Update charts based on patient data
+    function updateCharts() {
+      const ageChart = document.getElementById('ageChart');
+      const genderChart = document.getElementById('genderChart');
+
+      if (patients.length === 0) {
+        ageChart.innerHTML = '<p class="text-gray-500 dark:text-gray-400">Chart will appear when patients are added</p>';
+        genderChart.innerHTML = '<p class="text-gray-500 dark:text-gray-400">Chart will appear when patients are added</p>';
+        return;
+      }
+
+      // Create simple bar chart for age groups
+      const ageGroups = {
+        '0-18': 0,
+        '19-35': 0,
+        '36-50': 0,
+        '51+': 0
+      };
+
+      patients.forEach(patient => {
+        if (patient.age <= 18) ageGroups['0-18']++;
+        else if (patient.age <= 35) ageGroups['19-35']++;
+        else if (patient.age <= 50) ageGroups['36-50']++;
+        else ageGroups['51+']++;
+      });
+
+      // Simple representation
+      ageChart.innerHTML = `
+        <div class="flex h-full items-end justify-around">
+          ${Object.entries(ageGroups).map(([group, count]) => {
+        const percentage = (count / patients.length) * 100;
+        return `
+              <div class="flex flex-col items-center">
+                <div class="bg-blue-500 dark:bg-blue-600 w-10 rounded-t-lg" 
+                  style="height: ${Math.max(percentage, 5)}%"></div>
+                <div class="text-xs mt-1 text-gray-700 dark:text-gray-300">${group}</div>
+                <div class="text-xs text-gray-500 dark:text-gray-400">${count}</div>
+              </div>
+            `;
+      }).join('')}
+        </div>
+      `;
+
+      // Gender chart
+      const genderCounts = {
+        male: patients.filter(p => p.gender === 'male').length,
+        female: patients.filter(p => p.gender === 'female').length,
+        other: patients.filter(p => p.gender === 'other').length
+      };
+
+      genderChart.innerHTML = `
+        <div class="flex h-full items-center justify-center gap-4">
+          <div class="h-32 w-32 relative">
+            <svg viewBox="0 0 36 36" class="h-full w-full">
+              <!-- Male segment -->
+              <path class="fill-blue-500 dark:fill-blue-600" 
+                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                stroke-width="2"
+                stroke-dasharray="${(genderCounts.male / patients.length) * 100}, 100"
+                stroke-dashoffset="25" />
+              <!-- Female segment -->
+              <path class="fill-pink-500 dark:fill-pink-600" 
+                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                stroke-width="2"
+                stroke-dasharray="${(genderCounts.female / patients.length) * 100}, 100"
+                stroke-dashoffset="${25 - ((genderCounts.male / patients.length) * 100)}" />
+              <!-- Other segment -->
+              <path class="fill-purple-500 dark:fill-purple-600" 
+                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                stroke-width="2"
+                stroke-dasharray="${(genderCounts.other / patients.length) * 100}, 100"
+                stroke-dashoffset="${25 - ((genderCounts.male / patients.length) * 100) - ((genderCounts.female / patients.length) * 100)}" />
+            </svg>
+          </div>
+          <div class="text-sm text-gray-700 dark:text-gray-300">
+            <div class="flex items-center mb-1">
+              <div class="w-3 h-3 rounded-full bg-blue-500 dark:bg-blue-600 mr-2"></div>
+              <span>Male: ${genderCounts.male} (${Math.round((genderCounts.male / patients.length) * 100)}%)</span>
+            </div>
+            <div class="flex items-center mb-1">
+              <div class="w-3 h-3 rounded-full bg-pink-500 dark:bg-pink-600 mr-2"></div>
+              <span>Female: ${genderCounts.female} (${Math.round((genderCounts.female / patients.length) * 100)}%)</span>
+            </div>
+            <div class="flex items-center">
+              <div class="w-3 h-3 rounded-full bg-purple-500 dark:bg-purple-600 mr-2"></div>
+              <span>Other: ${genderCounts.other} (${Math.round((genderCounts.other / patients.length) * 100)}%)</span>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // Show notification
+    function showNotification(message) {
+      const notification = document.createElement('div');
+      notification.className = 'fixed bottom-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg transform transition-all duration-500 opacity-0 translate-y-2';
+      notification.textContent = message;
+      document.body.appendChild(notification);
+
+      // Animate in
+      setTimeout(() => {
+        notification.classList.remove('opacity-0', 'translate-y-2');
+      }, 100);
+
+      // Animate out
+      setTimeout(() => {
+        notification.classList.add('opacity-0', 'translate-y-2');
+        setTimeout(() => {
+          notification.remove();
+        }, 500);
+      }, 3000);
+    }
   </script>
 </body>
-
 </html>

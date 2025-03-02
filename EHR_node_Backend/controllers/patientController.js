@@ -1,67 +1,47 @@
-const Patient = require('../models/patient.model');
+const fs = require("fs");
+const path = require("path");
+
+const patientsFile = path.join(__dirname, "../data/patients.json");
+
+const getPatients = (req, res) => {
+  if (!fs.existsSync(patientsFile)) return [];
+  const data = fs.readFileSync(patientsFile);
+  return JSON.parse(data);
+};
+
+exports.getPatients = (req, res) => {
+  const patients = getPatients();
+  res.json(patients);
+}
+
+const savePatients = (data) => {
+  console.log(data);
+  
+  fs.writeFileSync(patientsFile, JSON.stringify(data, null, 2));
+};
 
 // Get all patients
-exports.getAllPatients = async (req, res) => {
-  try {
-    const patients = await Patient.find();
-    res.render("patients", { patients });
-  } catch (error) {
-    res.status(500).send(error.message);
-  }
+exports.getAllPatients = (req, res) => {
+  const patients = getPatients();
+  res.render("patients", { patients });
 };
 
-// Get single patient with related data
-exports.getPatientById = async (req, res) => {
-  try {
-    const patient = await Patient.findById(req.params.id)
-      .populate('appointments')
-      .populate('prescriptions');
-
-    if (!patient) return res.status(404).json({ error: 'Patient not found' });
-    res.json(patient);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
+// Add a new patient
+exports.addPatient = (req, res) => {
+  console.log(req.body);
+  const patients = getPatients();
+  const { name, age, gender, contact } = req.body;
+  
+  const newPatient = { id: Date.now(), name, age, gender, contact };
+  patients.push(newPatient);
+  savePatients(patients);
+  res.redirect("/patient");
 };
 
-// Add new patient
-exports.addPatient = async (req, res) => {
-  try {
-    // Generate custom ID
-    const lastPatient = await Patient.findOne().sort({ _id: -1 });
-    const newId = lastPatient ? 
-      `P${parseInt(lastPatient._id.slice(1)) + 1}` : 'P1001';
-
-    const newPatient = new Patient({
-      _id: newId,
-      ...req.body,
-      last_visit: new Date().toISOString().split('T')[0],
-      condition: "Stable",
-      aiSupportResponse: ""
-    });
-
-    await newPatient.save();
-    res.redirect("/patient");
-  } catch (error) {
-    res.status(500).send(error.message);
-  }
-};
-
-// Update AI response
-exports.updatePatientAIResponse = async (id, response) => {
-  try {
-    await Patient.findByIdAndUpdate(id, { aiSupportResponse: response });
-  } catch (error) {
-    console.error('Error updating AI response:', error);
-  }
-};
-
-// Delete patient
-exports.deletePatient = async (req, res) => {
-  try {
-    await Patient.findByIdAndDelete(req.params.id);
-    res.redirect("/patient");
-  } catch (error) {
-    res.status(500).send(error.message);
-  }
+// Delete a patient
+exports.deletePatient = (req, res) => {
+  let patients = getPatients();
+  patients = patients.filter((p) => p.id !== parseInt(req.params.id));
+  savePatients(patients);
+  res.redirect("/patient");
 };

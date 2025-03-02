@@ -1,30 +1,29 @@
-const MedicalStaff = require('../models/medicalStaff.model');
+const fs = require("fs");
+const path = require("path");
 
-// Get all doctors
-exports.getAllDoctors = async (req, res) => {
-  try {
-    const doctors = await MedicalStaff.find({ role: 'Doctor' });
-    res.render("doctors", { doctors });
-  } catch (error) {
-    res.status(500).send(error.message);
-  }
+const doctorsFile = path.join(__dirname, "../data/doctors.json");
+
+const getDoctors = () => {
+  if (!fs.existsSync(doctorsFile)) return [];
+  return JSON.parse(fs.readFileSync(doctorsFile));
 };
 
-// Add new doctor
-exports.addDoctor = async (req, res) => {
-  try {
-    const { name, specialization, availability } = req.body;
-    
-    const newDoctor = new MedicalStaff({
-      name,
-      role: 'Doctor',
-      specialization,
-      availability: availability || '9 AM - 5 PM'
-    });
+const saveDoctors = (data) => {
+  fs.writeFileSync(doctorsFile, JSON.stringify(data, null, 2));
+};
 
-    await newDoctor.save();
-    res.redirect("/doctor");
-  } catch (error) {
-    res.status(500).send(error.message);
-  }
+// Get all doctors
+exports.getAllDoctors = (req, res) => {
+  const doctors = getDoctors();
+  res.render("doctors", { doctors });
+};
+
+// Add a new doctor
+exports.addDoctor = (req, res) => {
+  const doctors = getDoctors();
+  const { name, specialization } = req.body;
+  const newDoctor = { id: Date.now(), name, specialization };
+  doctors.push(newDoctor);
+  saveDoctors(doctors);
+  res.redirect("/doctor");
 };

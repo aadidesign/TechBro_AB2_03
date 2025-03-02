@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Patient Recommendation</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Glassmorphism Effect */
+    .glassmorphism {
+      background: rgba(255, 255, 255, 0.3);
+      backdrop-filter: blur(15px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease-in-out;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .glassmorphism {
+        background: rgba(30, 41, 59, 0.7);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+      }
+    }
+
+    /* Smooth Fade-in Animation */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeIn 0.6s forwards;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Enhanced Loading Spinner */
+    .loading-spinner {
+      width: 50px;
+      height: 50px;
+      border: 5px solid rgba(255, 255, 255, 0.3);
+      border-top: 5px solid #3b82f6;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-r from-gray-100 to-gray-300 dark:from-gray-900 dark:to-gray-800 transition-colors duration-500">
+  <div class="max-w-4xl mx-auto px-6 sm:px-8 py-12">
+    <!-- Patient Header -->
+    <div class="text-center mb-8 fade-in">
+      <h1 id="patient-name" class="text-4xl font-bold text-gray-900 dark:text-white"></h1>
+      <p id="patient-id" class="text-lg text-gray-600 dark:text-gray-400 mt-2"></p>
+    </div>
+    
+    <!-- AI Recommendation Section -->
+    <div class="glassmorphism p-8 rounded-2xl shadow-xl fade-in">
+      <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-6 text-center">AI Recommendation</h2>
+      
+      <!-- Recommendation Content -->
+      <div id="recommendation" class="text-gray-800 dark:text-gray-300 text-lg text-center">
+        <div class="flex justify-center items-center py-10">
+          <div class="loading-spinner"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    function getQueryParam(param) {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(param);
+    }
+
+    const patientId = getQueryParam('patientId');
+
+    // Sample Data for Testing
+    const sampleData = {
+      recommendation: JSON.stringify({
+        "patient_id": "P1004",
+        "patient_name": "Sophia Davis",
+        "recommendation_summary": "Continue current treatment plan for thyroid disorder. Monitor hormone levels and adjust Levothyroxine dosage as needed.",
+        "treatment_plan": {
+          "medications": ["Levothyroxine"],
+          "lifestyle_changes": ["Balanced diet", "Regular exercise", "Stress management"],
+          "monitoring_instructions": ["Regular thyroid function tests", "Monitor for symptoms"]
+        },
+        "risk_assessment": "Low risk, but continued monitoring is crucial.",
+        "followup_schedule": "Follow-up in 3 months."
+      })
+    };
+
+    function cleanJsonString(str) {
+      return str.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+    }
+
+    function displayRecommendation(data) {
+      try {
+        let recommendation;
+
+        if (typeof data === 'string') {
+          recommendation = JSON.parse(cleanJsonString(data));
+        } else if (data.recommendation) {
+          recommendation = typeof data.recommendation === 'string' ? JSON.parse(cleanJsonString(data.recommendation)) : data.recommendation;
+        } else {
+          recommendation = data;
+        }
+
+        document.getElementById('patient-name').textContent = recommendation.patient_name || 'Patient';
+        document.getElementById('patient-id').textContent = `ID: ${recommendation.patient_id || 'Unknown'}`;
+
+        const recommendationHTML = `
+          <div class="mb-6 text-left">
+            <h3 class="text-2xl font-semibold text-gray-900 dark:text-white mb-2">Summary</h3>
+            <p class="dark:text-gray-300">${recommendation.recommendation_summary}</p>
+          </div>
+          
+          <div class="mb-6 text-left">
+            <h3 class="text-2xl font-semibold text-gray-900 dark:text-white mb-2">Treatment Plan</h3>
+            <ul class="list-disc list-inside dark:text-gray-300 space-y-2">
+              <li><strong>Medications:</strong> ${recommendation.treatment_plan.medications.join(', ')}</li>
+              <li><strong>Lifestyle Changes:</strong> ${recommendation.treatment_plan.lifestyle_changes.join(', ')}</li>
+              <li><strong>Monitoring:</strong> ${recommendation.treatment_plan.monitoring_instructions.join(', ')}</li>
+            </ul>
+          </div>
+          
+          <div class="mb-6 text-left">
+            <h3 class="text-2xl font-semibold text-gray-900 dark:text-white mb-2">Risk Assessment</h3>
+            <p class="dark:text-gray-300">${recommendation.risk_assessment}</p>
+          </div>
+          
+          <div class="text-left">
+            <h3 class="text-2xl font-semibold text-gray-900 dark:text-white mb-2">Follow-Up Schedule</h3>
+            <p class="dark:text-gray-300">${recommendation.followup_schedule}</p>
+          </div>
+        `;
+
+        document.getElementById('recommendation').innerHTML = recommendationHTML;
+      } catch (error) {
+        console.error('Error parsing recommendation:', error);
+        document.getElementById('recommendation').innerHTML = `
+          <div class="bg-red-100 dark:bg-red-900 border-l-4 border-red-500 text-red-700 dark:text-red-200 p-4">
+            <p class="font-bold">Error</p>
+            <p>Failed to process recommendation data. Please try again later.</p>
+          </div>
+        `;
+      }
+    }
+
+    if (!patientId) {
+      document.getElementById('recommendation').innerHTML = `
+        <div class="bg-yellow-100 dark:bg-yellow-900 border-l-4 border-yellow-500 text-yellow-700 dark:text-yellow-200 p-4">
+          <p class="font-bold">No Patient ID</p>
+          <p>Please check the URL and try again.</p>
+        </div>
+      `;
+    } else {
+      fetch('https://congenial-journey-7gr54g5pj593w546-3010.app.github.dev/generate-recommendation', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ patientId: patientId }),
+      })
+        .then(response => response.json())
+        .then(data => displayRecommendation(data))
+        .catch(error => console.error('Fetch Error:', error));
+    }
+  </script>
+</body>
+</html>
