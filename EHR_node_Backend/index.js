@@ -28,9 +28,7 @@ const MONGODB_URI = process.env.MONGODB_URI || "mongodb+srv://admin:admin@social
 // Connect to MongoDB
 mongoose.connect(MONGODB_URI, {
   useNewUrlParser: true,
-  useUnifiedTopology: true,
-  useCreateIndex: true,
-  useFindAndModify: false
+  useUnifiedTopology: true
 })
 .then(() => console.log("Connected to MongoDB"))
 .catch(err => console.error("MongoDB connection error:", err));
@@ -94,6 +92,10 @@ app.use("/prescription", prescriptionRoutes);
 app.use("/labtests", labTestRoutes);
 app.use("/doctor", doctorRoutes);
 app.use("/reports", reportsRoutes);
+
+app.get("/AI", (req, res) => {
+  res.render("AI");
+});
 
 // 404 handler
 app.use((req, res, next) => {

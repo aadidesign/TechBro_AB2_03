@@ -18,6 +18,8 @@ const generativeModel = genAI.getGenerativeModel({ model: "gemini-2.0-pro-exp-02
 
 app.post('/generate-recommendation', async (req, res) => {
   try {
+    console.log("generating....");
+    
     const patientId = req.body.patientId;
     if (!patientId) {
       return res.status(400).json({ error: "Missing patientId in request body" });
