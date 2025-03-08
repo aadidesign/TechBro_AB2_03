@@ -116,7 +116,7 @@ const Patients = () => {
           className="space-y-6"
         >
           <h1 className="text-4xl font-bold text-white pb-4">
-            Medical Records Management
+            Patients
           </h1>
           <div className="flex items-start gap-4 bg-gradient-to-r from-blue-900/40 to-blue-800/30 
                         backdrop-blur-sm p-6 rounded-xl border border-blue-500/20 shadow-lg">
