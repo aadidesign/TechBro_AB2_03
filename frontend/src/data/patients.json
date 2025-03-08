@@ -1,0 +1,242 @@
+[
+  {
+    "id": "P1002",
+    "name": "Emma Johnson",
+    "age": "30",
+    "gender": "Female",
+    "blood_type": "A-",
+    "diagnoses": [
+      "Asthma"
+    ],
+    "medications": [
+      "Albuterol"
+    ],
+    "allergies": [
+      "Dust",
+      "Peanuts"
+    ],
+    "last_visit": "2025-01-20",
+    "condition": "Mild",
+    "aiSupportResponse": ""
+  },
+  {
+    "id": "P1003",
+    "name": "Michael Brown",
+    "age": "50",
+    "gender": "Male",
+    "blood_type": "B+",
+    "diagnoses": [
+      "High Cholesterol"
+    ],
+    "medications": [
+      "Atorvastatin"
+    ],
+    "allergies": [
+      "None"
+    ],
+    "last_visit": "2025-02-10",
+    "condition": "Stable",
+    "aiSupportResponse": ""
+  },
+  {
+    "id": "P1004",
+    "name": "Sophia Davis",
+    "age": "28",
+    "gender": "Female",
+    "blood_type": "AB+",
+    "diagnoses": [
+      "Thyroid Disorder"
+    ],
+    "medications": [
+      "Levothyroxine"
+    ],
+    "allergies": [
+      "Penicillin"
+    ],
+    "last_visit": "2025-01-05",
+    "condition": "Stable",
+    "aiSupportResponse": ""
+  },
+  {
+    "id": "P1005",
+    "name": "Liam Wilson",
+    "age": "35",
+    "gender": "Male",
+    "blood_type": "O-",
+    "diagnoses": [
+      "Anemia"
+    ],
+    "medications": [
+      "Iron Supplements"
+    ],
+    "allergies": [
+      "None"
+    ],
+    "last_visit": "2025-02-28",
+    "condition": "Improving",
+    "aiSupportResponse": ""
+  },
+  {
+    "id": "P1006",
+    "name": "Olivia Martin",
+    "age": "40",
+    "gender": "Female",
+    "blood_type": "A+",
+    "diagnoses": [
+      "Migraine"
+    ],
+    "medications": [
+      "Sumatriptan"
+    ],
+    "allergies": [
+      "Lactose"
+    ],
+    "last_visit": "2025-02-18",
+    "condition": "Mild",
+    "aiSupportResponse": ""
+  },
+  {
+    "id": "P1007",
+    "name": "William Clark",
+    "age": "60",
+    "gender": "Male",
+    "blood_type": "B-",
+    "diagnoses": [
+      "Arthritis"
+    ],
+    "medications": [
+      "Ibuprofen"
+    ],
+    "allergies": [
+      "Gluten"
+    ],
+    "last_visit": "2025-02-05",
+    "condition": "Stable",
+    "aiSupportResponse": ""
+  },
+  {
+    "id": "P1008",
+    "name": "Ava Thompson",
+    "age": "55",
+    "gender": "Female",
+    "blood_type": "AB-",
+    "diagnoses": [
+      "Osteoporosis"
+    ],
+    "medications": [
+      "Calcium Supplements"
+    ],
+    "allergies": [
+      "Shellfish"
+    ],
+    "last_visit": "2025-02-22",
+    "condition": "Stable",
+    "aiSupportResponse": ""
+  },
+  {
+    "id": "P1008",
+    "name": "Omkar Sonawane",
+    "age": "99",
+    "gender": "Male",
+    "contact": "1234567890",
+    "last_visit": "2025-03-01",
+    "condition": "Stable",
+    "aiSupportResponse": ""
+  },
+  {
+    "id": 1740888533118
+  },
+  {
+    "id": 1740888718288
+  },
+  {
+    "id": 1740888781747
+  },
+  {
+    "id": 1740888849906
+  },
+  {
+    "id": 1740888974641
+  },
+  {
+    "id": 1740888992791
+  },
+  {
+    "id": 1740889052822
+  },
+  {
+    "id": 1740889100938
+  },
+  {
+    "id": 1740889114202
+  },
+  {
+    "id": 1740891531436
+  },
+  {
+    "id": 1740891534015
+  },
+  {
+    "id": 1740892343447
+  },
+  {
+    "id": 1740892345916
+  },
+  {
+    "id": 1740892346622
+  },
+  {
+    "id": 1740892346835
+  },
+  {
+    "id": 1740892348552
+  },
+  {
+    "id": 1740892349678
+  },
+  {
+    "id": 1740892350372
+  },
+  {
+    "id": 1740892350466
+  },
+  {
+    "id": 1740892351097
+  },
+  {
+    "id": 1740892370104
+  },
+  {
+    "id": 1740892370990
+  },
+  {
+    "id": 1740892370998
+  },
+  {
+    "id": 1740892371109
+  },
+  {
+    "id": 1740892371768
+  },
+  {
+    "id": 1740892371777
+  },
+  {
+    "id": 1740892371878
+  },
+  {
+    "id": 1740892371991
+  },
+  {
+    "id": 1740892372570
+  },
+  {
+    "id": 1740892372579
+  },
+  {
+    "id": 1740892372583
+  },
+  {
+    "id": 1740892373444
+  }
+]

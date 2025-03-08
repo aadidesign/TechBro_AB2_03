@@ -1,0 +1,66 @@
+[
+  {
+    "id": "P1001",
+    "patient_name": "John Doe",
+    "doctor_name": "Dr. Smith",
+    "medications": ["Paracetamol", "Ibuprofen"],
+    "instructions": "Take one tablet twice daily after food.",
+    "date": "2025-03-02"
+  },
+  {
+    "id": "P1002",
+    "patient_name": "Emma Johnson",
+    "doctor_name": "Dr. Patel",
+    "medications": ["Amoxicillin", "Vitamin C"],
+    "instructions": "Take one capsule every 8 hours for 7 days.",
+    "date": "2025-03-04"
+  },
+  {
+    "id": "P1003",
+    "patient_name": "Michael Brown",
+    "doctor_name": "Dr. Sharma",
+    "medications": ["Metformin"],
+    "instructions": "Take one tablet daily before breakfast.",
+    "date": "2025-03-05"
+  },
+  {
+    "id": "P1004",
+    "patient_name": "Sophia Davis",
+    "doctor_name": "Dr. Verma",
+    "medications": ["Albuterol"],
+    "instructions": "Use inhaler as needed for wheezing.",
+    "date": "2025-03-06"
+  },
+  {
+    "id": "P1005",
+    "patient_name": "Liam Wilson",
+    "doctor_name": "Dr. Mehta",
+    "medications": ["Levothyroxine"],
+    "instructions": "Take one tablet every morning on an empty stomach.",
+    "date": "2025-03-07"
+  },
+  {
+    "id": "P1006",
+    "patient_name": "Olivia Martin",
+    "doctor_name": "Dr. Khan",
+    "medications": ["Sumatriptan"],
+    "instructions": "Take one tablet at the onset of migraine symptoms.",
+    "date": "2025-03-08"
+  },
+  {
+    "id": "P1007",
+    "patient_name": "William Clark",
+    "doctor_name": "Dr. Reddy",
+    "medications": ["Ibuprofen"],
+    "instructions": "Take one tablet every 6 hours for pain relief.",
+    "date": "2025-03-09"
+  },
+  {
+    "id": "P1008",
+    "patient_name": "Ava Thompson",
+    "doctor_name": "Dr. Nair",
+    "medications": ["Calcium Supplements", "Vitamin D"],
+    "instructions": "Take one tablet daily with food.",
+    "date": "2025-03-10"
+  }
+]
