@@ -67,29 +67,21 @@ const Sidebar = () => {
         {/* Logo and Brand */}
         <div className="flex items-center space-x-3 mb-10 pl-1">
           <motion.div 
-            className="w-11 h-11 bg-gradient-to-br from-green-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg"
+            className="w-12 h-12 bg-gradient-to-br from-blue-600 to-blue-800 rounded-xl flex items-center justify-center shadow-lg"
             whileHover={{ 
               scale: 1.05,
-              boxShadow: "0 0 20px rgba(16, 185, 129, 0.4)",
+              boxShadow: "0 0 20px rgba(59, 130, 246, 0.4)",
             }}
           >
-            {/* New Ayurvedic/Medical themed logo */}
-            <svg className="w-7 h-7 text-white" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              {/* Mortar and pestle - traditional Ayurvedic tool */}
-              <path d="M12 3C7.58 3 4 4.79 4 7V17C4 19.21 7.58 21 12 21C16.42 21 20 19.21 20 17V7C20 4.79 16.42 3 12 3Z" 
-                fill="currentColor" fillOpacity="0.4" />
-              <path d="M12 5C8.13 5 5 6.34 5 8V16C5 17.66 8.13 19 12 19C15.87 19 19 17.66 19 16V8C19 6.34 15.87 5 12 5Z" 
-                fill="currentColor" fillOpacity="0.2" />
-              
-              {/* Pestle */}
-              <path d="M9.5 4.5L8 9H11L9.5 4.5Z" fill="currentColor" />
-              
-              {/* Leaf symbol - representing herbal medicine */}
-              <path d="M14.5 8C16.5 8 18 9.5 18 11.5C18 13.5 16.5 15 14.5 15C14.5 13 13 11.5 11 11.5C11 9.5 12.5 8 14.5 8Z" 
-                fill="currentColor" />
-              
-              {/* Circular element - representing wholeness/chakra */}
-              <circle cx="8.5" cy="13.5" r="1.5" fill="currentColor" />
+            {/* Simple medical plus sign logo */}
+            <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path 
+                d="M12 5v14M5 12h14" 
+                stroke="#4ade80" 
+                strokeWidth="3.5" 
+                strokeLinecap="round" 
+                strokeLinejoin="round"
+              />
             </svg>
           </motion.div>
           <motion.span 
@@ -121,8 +113,8 @@ const Sidebar = () => {
           </svg>
         </motion.button>
 
-        {/* Navigation Links */}
-        <nav className="space-y-2 mt-2 flex-1 overflow-y-auto pb-20">
+        {/* Navigation Links - Increased spacing between items */}
+        <nav className="space-y-4 mt-2 flex-1 overflow-y-auto pb-20">
           {[
             { path: '/dashboard', icon: 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6', text: 'Dashboard' },
             { path: '/patients', icon: 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z', text: 'Patients' },
@@ -132,7 +124,7 @@ const Sidebar = () => {
             { path: '/reports', icon: 'M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z', text: 'Reports' },
           ].map((item, index) => (
             <Link to={item.path} key={item.path}>
-              <div className="relative">
+              <div className="relative mb-2">
                 {/* Active item glow effect */}
                 {isActiveRoute(item.path) && (
                   <motion.div 
@@ -144,7 +136,7 @@ const Sidebar = () => {
                 )}
                 
                 <motion.div
-                  className={`flex items-center px-4 py-3.5 rounded-xl transition-all duration-200 relative z-10 ${
+                  className={`flex items-center px-4 py-3 rounded-xl transition-all duration-200 relative z-10 ${
                     isActiveRoute(item.path) 
                       ? 'bg-gradient-to-r from-green-500/25 to-blue-500/25 border border-white/15 shadow-lg' 
                       : 'bg-white/5 hover:bg-white/10 border border-transparent'
