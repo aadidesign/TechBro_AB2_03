@@ -2,6 +2,23 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const path = require("path");
 const mongoose = require("mongoose");
+const cors = require('cors');
+const fs = require('fs');
+
+// Create data directory if it doesn't exist
+const dataDir = path.join(__dirname, 'data');
+if (!fs.existsSync(dataDir)) {
+  fs.mkdirSync(dataDir);
+}
+
+// Initialize empty JSON files if they don't exist
+const files = ['patients', 'appointments', 'doctors', 'medicalRecords'];
+files.forEach(file => {
+  const filePath = path.join(dataDir, `${file}.json`);
+  if (!fs.existsSync(filePath)) {
+    fs.writeFileSync(filePath, JSON.stringify([]));
+  }
+});
 
 // Routes
 const patientRoutes = require("./routes/patientRoutes");
@@ -11,6 +28,7 @@ const prescriptionRoutes = require("./routes/prescriptionRoutes");
 const labTestRoutes = require("./routes/labTestRoutes");
 const doctorRoutes = require("./routes/doctorRoutes");
 const reportsRoutes = require("./routes/reportsRoutes");
+const dashboardRoutes = require("./routes/dashboardRoutes");
 
 // Models
 const Patient = require("./models/patient.model");
@@ -59,6 +77,18 @@ app.use(ejsLayouts);
 //   next();
 // });
 
+// Add this before your routes
+app.use(cors({
+  origin: 'http://localhost:5173', // Your frontend URL
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
+}));
+
+// Add these middleware configurations before your routes
+app.use(express.json());
+app.use(bodyParser.json());
+
 // Home route
 app.get("/", async (req, res, next) => {
   try {
@@ -85,13 +115,14 @@ app.get("/", async (req, res, next) => {
 });
 
 // Use Routes
-app.use("/patient", patientRoutes);
-app.use("/appointment", appointmentRoutes);
-app.use("/medicalrecords", medicalRecordRoutes);
-app.use("/prescription", prescriptionRoutes);
-app.use("/labtests", labTestRoutes);
-app.use("/doctor", doctorRoutes);
-app.use("/reports", reportsRoutes);
+app.use("/api/patients", patientRoutes);
+app.use("/api/appointments", appointmentRoutes);
+app.use("/api/medical-records", medicalRecordRoutes);
+app.use("/api/prescriptions", prescriptionRoutes);
+app.use("/api/lab-tests", labTestRoutes);
+app.use("/api/doctors", doctorRoutes);
+app.use("/api/reports", reportsRoutes);
+app.use("/api/dashboard", dashboardRoutes);
 
 app.get("/AI", (req, res) => {
   res.render("AI");
@@ -108,3 +139,5 @@ app.use((req, res, next) => {
 app.use(errorHandler);
 
 app.listen(PORT, () => console.log(`🚀 Server running on http://localhost:${PORT}`));
+
+module.exports = app;

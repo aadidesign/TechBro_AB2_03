@@ -7,7 +7,6 @@ import AgeChart from '../components/AgeChart';
 import GenderChart from '../components/GenderChart';
 import Notification from '../components/Notification';
 import patientsData from '../data/patientsData';
-import EmptyState from '../components/EmptyState';
 
 const Patients = () => {
   // State variables
@@ -20,107 +19,82 @@ const Patients = () => {
   const [showAddModal, setShowAddModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [patientToDelete, setPatientToDelete] = useState(null);
-  const [notification, setNotification] = useState({
-    show: false,
-    message: ''
-  });
+  const [notification, setNotification] = useState({ show: false, message: '' });
 
-  // Animation variants
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: { 
-      opacity: 1,
-      transition: { 
-        staggerChildren: 0.1,
-        delayChildren: 0.2
-      }
-    }
-  };
-
-  const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
-    visible: { 
-      y: 0, 
-      opacity: 1,
-      transition: { type: 'spring', stiffness: 100 }
-    }
-  };
-
-  // Load patients data
+  // Load mock data on component mount
   useEffect(() => {
+    // In a real app, this would be a fetch call to an API
     setPatients(patientsData);
-    setFilteredPatients(patientsData);
   }, []);
 
-  // Filter and sort patients
+  // Filter and sort patients whenever dependencies change
   useEffect(() => {
-    if (!patients.length) return;
+    filterAndSortPatients();
+  }, [patients, currentFilter, currentSort, searchTerm]);
 
-    let filtered = [...patients];
+  // Filter and sort patients based on current criteria
+  const filterAndSortPatients = () => {
+    let result = [...patients];
+    
+    // Apply gender filter
+    if (currentFilter !== 'all') {
+      result = result.filter(p => p.gender === currentFilter);
+    }
     
     // Apply search filter
     if (searchTerm) {
-      filtered = filtered.filter(patient => 
-        patient.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        patient.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        patient.phone?.includes(searchTerm)
+      result = result.filter(p =>
+        p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        p.age.toString().includes(searchTerm) ||
+        p.gender.toLowerCase().includes(searchTerm.toLowerCase())
       );
-    }
-    
-    // Apply gender filter
-    if (genderFilter !== 'all') {
-      filtered = filtered.filter(patient => patient.gender.toLowerCase() === genderFilter);
-    }
-    
-    // Apply status filter
-    if (statusFilter !== 'all') {
-      filtered = filtered.filter(patient => patient.status.toLowerCase() === statusFilter);
     }
     
     // Apply sorting
     if (currentSort === 'age') {
-      filtered.sort((a, b) => a.age - b.age);
-    } else if (currentSort === 'name') {
-      filtered.sort((a, b) => a.name.localeCompare(b.name));
+      result = result.sort((a, b) => a.age - b.age);
     }
     
-    setFilteredPatients(filtered);
-  }, [patients, searchTerm, genderFilter, statusFilter, currentSort]);
+    setFilteredPatients(result);
+  };
 
-  // Handle adding a new patient
-  const handleAddPatient = (newPatient) => {
-    const patientWithId = {
-      ...newPatient,
-      id: patients.length + 1,
-      status: 'active',
-      createdAt: new Date().toISOString()
+  // Add a new patient
+  const addPatient = (patientData) => {
+    const newPatient = {
+      ...patientData,
+      id: patients.length > 0 ? Math.max(...patients.map(p => p.id)) + 1 : 1
     };
-    setPatients([...patients, patientWithId]);
+    
+    setPatients([...patients, newPatient]);
     setShowAddModal(false);
     showNotification('Patient added successfully');
   };
 
-  // Delete patient
-  const deletePatient = (id) => {
-    const updatedPatients = patients.filter(patient => patient.id !== id);
-    setPatients(updatedPatients);
+  // Delete a patient
+  const deletePatient = (patientId) => {
+    setPatients(patients.filter(p => p.id !== patientId));
     setShowDeleteModal(false);
     showNotification('Patient deleted successfully');
   };
 
   // Show notification
   const showNotification = (message) => {
-    setNotification({
-      show: true,
-      message
-    });
-    
+    setNotification({ show: true, message });
     setTimeout(() => {
-      setNotification({
-        show: false,
-        message: ''
-      });
+      setNotification({ show: false, message: '' });
     }, 3000);
+  };
+
+  // Open delete confirmation modal
+  const openDeleteModal = (patientId) => {
+    setPatientToDelete(patientId);
+    setShowDeleteModal(true);
+  };
+
+  // Handle form submission in AddPatientModal
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    // Implementation of form submission logic
   };
 
   return (
@@ -236,63 +210,64 @@ const Patients = () => {
       
       {/* Patient Cards Grid */}
       <motion.div 
-        variants={containerVariants}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+        variants={containerVariants}
+        initial="initial"
+        animate="animate"
       >
         {filteredPatients.length === 0 ? (
           <div className="col-span-full">
-            <EmptyState 
-              message="No patients match your search criteria. Try adjusting your filters or add a new patient."
-              icon="user"
-            />
+            <EmptyState />
           </div>
         ) : (
           filteredPatients.map(patient => (
-            <motion.div
-              key={patient.id}
-              variants={itemVariants}
-              whileHover={{ 
-                scale: 1.02, 
-                boxShadow: "0 0 20px rgba(59, 130, 246, 0.2)",
-                borderColor: "rgba(255, 255, 255, 0.2)"
-              }}
-              className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-4 transition-all hover:bg-white/10"
-            >
-              <PatientCard 
-                patient={patient} 
-                onDelete={(patient) => {
-                  setPatientToDelete(patient);
-                  setShowDeleteModal(true);
-                }}
-              />
-            </motion.div>
+            <PatientCard 
+              key={patient.id} 
+              patient={patient} 
+              onDelete={openDeleteModal}
+            />
           ))
+        ) : (
+          <EmptyState />
         )}
       </motion.div>
-      
-      {/* Add Patient Modal */}
-      <AnimatePresence>
-        {showAddModal && (
-          <AddPatientModal
-            show={showAddModal}
-            onClose={() => setShowAddModal(false)}
-            onSave={handleAddPatient}
-          />
-        )}
-      </AnimatePresence>
-      
-      {/* Delete Confirmation Modal */}
-      <AnimatePresence>
-        {showDeleteModal && patientToDelete && (
-          <DeleteConfirmationModal
-            show={showDeleteModal}
-            onClose={() => setShowDeleteModal(false)}
-            onConfirm={() => deletePatient(patientToDelete.id)}
-            title="Delete Patient"
-            message={`Are you sure you want to delete ${patientToDelete.name}'s record? This action cannot be undone.`}
-          />
-        )}
-      </AnimatePresence>
+
+      {/* Charts Section */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <motion.div 
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          className="p-6 rounded-2xl bg-white/[0.05] backdrop-blur-sm border border-white/[0.05]"
+        >
+          <h3 className="text-xl font-semibold text-white mb-6">Age Distribution</h3>
+          <AgeChart patients={patients} />
+        </motion.div>
+
+        <motion.div 
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          className="p-6 rounded-2xl bg-white/[0.05] backdrop-blur-sm border border-white/[0.05]"
+        >
+          <h3 className="text-xl font-semibold text-white mb-6">Gender Distribution</h3>
+          <GenderChart patients={patients} />
+        </motion.div>
+      </div>
+
+      {/* Modals */}
+      <AddPatientModal 
+        show={showAddModal}
+        onClose={() => setShowAddModal(false)}
+        onSave={addPatient}
+      />
+      <DeleteConfirmationModal
+        show={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={() => deletePatient(patientToDelete)}
+        title="Delete Patient"
+        message="Are you sure you want to delete this patient? This action cannot be undone."
+      />
       <Notification
         show={notification.show}
         message={notification.message}
@@ -300,5 +275,16 @@ const Patients = () => {
     </motion.div>
   );
 };
+
+const EmptyState = () => (
+  <div className="text-center p-8 rounded-2xl bg-white/[0.05] backdrop-blur-sm border border-white/[0.05]">
+    <svg className="w-16 h-16 mx-auto text-white/20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" 
+            d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M12 12h.01M12 12h.01" />
+    </svg>
+    <p className="mt-4 text-white/70">No patients found</p>
+    <p className="text-sm text-white/50">Try adjusting your search or filters</p>
+  </div>
+);
 
 export default Patients; 

@@ -3,6 +3,7 @@ import { motion, AnimatePresence, useMotionValue, useTransform } from 'framer-mo
 import dashboardData from '../data/dashboardData';
 import { useTheme } from '../contexts/ThemeContext';
 import { IconButton } from '../components/ui/IconButton';
+import axios from 'axios'; // Make sure axios is installed: npm install axios
 
 // Animation variants
 const containerVariants = {
@@ -240,26 +241,23 @@ const Dashboard = () => {
   const [recentActivity, setRecentActivity] = useState([]);
   const [upcomingAppointments, setUpcomingAppointments] = useState([]);
   const [timeRange, setTimeRange] = useState('week');
-  const [healthMetrics, setHealthMetrics] = useState({});
+  const [healthMetrics, setHealthMetrics] = useState({
+    patientGrowth: [],
+    appointmentDistribution: [],
+    ageDistribution: {}
+  });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
 
   useEffect(() => {
     // Load mock data
-    setStats(dashboardData.stats || []);
-    setRecentActivity(dashboardData.recentActivity || []);
-    setUpcomingAppointments(dashboardData.upcomingAppointments || []);
-    setHealthMetrics(dashboardData.healthMetrics || {});
-    
-    // Create patient trend data if needed
-    if (dashboardData.healthMetrics && dashboardData.healthMetrics.patientGrowth) {
-      setPatientTrend(dashboardData.healthMetrics.patientGrowth);
-    }
-    
-    // Set appointment distribution data if available
-    if (dashboardData.healthMetrics && dashboardData.healthMetrics.appointmentDistribution) {
-      setAppointmentsByDept(dashboardData.healthMetrics.appointmentDistribution);
-    }
+    setStats(dashboardData.stats);
+    setRecentActivity(dashboardData.recentActivity);
+    setUpcomingAppointments(dashboardData.upcomingAppointments);
+    setHealthMetrics(dashboardData.healthMetrics);
   }, []);
 
   const handleMouseMove = (e) => {
@@ -308,22 +306,11 @@ const Dashboard = () => {
   };
 
   // Helper function to get icon for stat cards
-  const getStatIcon = (iconName, color) => {
-    let bgColorClass = 'bg-emerald-500/20';
-    let textColorClass = 'text-emerald-400';
-    
-    if (color === 'blue') {
-      bgColorClass = 'bg-blue-500/20';
-      textColorClass = 'text-blue-400';
-    } else if (color === 'indigo') {
-      bgColorClass = 'bg-indigo-500/20';
-      textColorClass = 'text-indigo-400';
-    } else if (color === 'red') {
-      bgColorClass = 'bg-red-500/20';
-      textColorClass = 'text-red-400';
-    }
-    
-    switch (iconName) {
+  const getStatIcon = (icon, color) => {
+    const bgColorClass = `bg-${color}-500/10`;
+    const textColorClass = `text-${color}-500`;
+
+    switch (icon) {
       case 'patients':
         return (
           <div className={`w-12 h-12 rounded-full ${bgColorClass} flex items-center justify-center`}>
@@ -390,26 +377,27 @@ const Dashboard = () => {
         </motion.p>
       </motion.div>
 
-      {/* Stats Cards */}
-      <motion.div 
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
-        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8"
-      >
+      {/* Stats Grid - Improved spacing */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
         {stats.map((stat) => (
-          <motion.div 
+          <motion.div
             key={stat.id}
-            variants={itemVariants}
+            variants={cardAnimation}
             whileHover={{ 
               scale: 1.02, 
               boxShadow: "0 0 20px rgba(59, 130, 246, 0.2)",
               borderColor: "rgba(255, 255, 255, 0.2)"
             }}
-            className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-6 transition-all hover:bg-white/10"
+            className="relative group backdrop-blur-xl bg-white/5 rounded-xl p-5 border border-white/10 shadow-lg overflow-hidden"
           >
-            <div className="h-full">
-              <div className="flex justify-between items-start">
+            {/* Card Glow */}
+            <motion.div
+              variants={oceanGlow}
+              className="absolute inset-0 bg-gradient-to-r from-emerald-500/10 via-blue-500/10 to-teal-500/10 rounded-xl blur-xl"
+            />
+            
+            <div className="relative z-10">
+              <div className="flex justify-between">
                 <div>
                   <p className="text-white/60 text-sm mb-1">{stat.title}</p>
                   <h3 className="text-2xl font-bold text-white mb-3">{stat.value}</h3>
@@ -433,40 +421,9 @@ const Dashboard = () => {
 
       {/* Activity and Appointments Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
-        <motion.div 
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
-          className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-6 transition-all hover:bg-white/10"
-        >
-          <h2 className="text-xl font-semibold text-white mb-6">Recent Activity</h2>
-          <div className="space-y-4">
-            {recentActivity.map((activity) => (
-              <motion.div 
-                key={activity.id}
-                variants={itemVariants}
-                whileHover={{ 
-                  scale: 1.02, 
-                  boxShadow: "0 0 10px rgba(59, 130, 246, 0.1)",
-                  borderColor: "rgba(255, 255, 255, 0.2)"
-                }}
-                className="flex items-start p-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors"
-              >
-                <div className="w-10 h-10 rounded-full flex items-center justify-center mr-3 bg-blue-500/20 text-blue-300">
-                  <span className="text-lg">
-                    {activity.type === 'appointment' ? '📅' :
-                     activity.type === 'record' ? '📋' :
-                     activity.type === 'test' ? '🔬' : '📌'}
-                  </span>
-                </div>
-                <div>
-                  <p className="text-white font-medium">{activity.message}</p>
-                  <p className="text-white/60 text-sm">{activity.time}</p>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
+        <div className="">
+          <RecentActivity />
+        </div>
 
         {/* Upcoming Appointments */}
         <motion.div 
@@ -477,7 +434,7 @@ const Dashboard = () => {
         >
           <h2 className="text-xl font-semibold text-white mb-6">Upcoming Appointments</h2>
           <div className="space-y-3">
-            {upcomingAppointments.map((appointment) => (
+            {upcomingAppointments && upcomingAppointments.map((appointment) => (
               <motion.div 
                 key={appointment.id}
                 variants={itemVariants}
@@ -504,12 +461,8 @@ const Dashboard = () => {
             ))}
             
             <motion.button 
-              whileHover={{ 
-                scale: 1.02, 
-                boxShadow: "0 0 20px rgba(59, 130, 246, 0.2)",
-                borderColor: "rgba(255, 255, 255, 0.2)"
-              }}
-              className="w-full mt-3 py-2 bg-white/5 backdrop-blur-md border border-white/10 rounded-xl text-white/80 hover:bg-white/10 hover:text-white transition-all"
+              whileHover={{ scale: 1.02 }}
+              className="w-full mt-3 py-2 backdrop-blur-md bg-white/5 border border-white/10 text-white/80 rounded-lg hover:bg-white/10 hover:text-white transition-colors"
             >
               View All Appointments
             </motion.button>
@@ -517,7 +470,7 @@ const Dashboard = () => {
         </motion.div>
       </div>
 
-      {/* Charts Section - Improved spacing */}
+      {/* Charts Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
         {/* Patient Growth Chart */}
         <motion.div 
@@ -537,22 +490,7 @@ const Dashboard = () => {
               const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
               const month = months[index % 12];
               const maxValue = Math.max(...healthMetrics.patientGrowth);
-              const height = (count / maxValue) * 100;
-              const colors = [
-                'from-blue-500 to-blue-400',
-                'from-indigo-500 to-indigo-400',
-                'from-purple-500 to-purple-400',
-                'from-pink-500 to-pink-400',
-                'from-red-500 to-red-400',
-                'from-orange-500 to-orange-400',
-                'from-amber-500 to-amber-400',
-                'from-yellow-500 to-yellow-400',
-                'from-lime-500 to-lime-400',
-                'from-green-500 to-green-400',
-                'from-emerald-500 to-emerald-400',
-                'from-teal-500 to-teal-400',
-              ];
-              
+              const height = (value / maxValue) * 100;
               return (
                 <div key={index} className="flex flex-col items-center group">
                   <div className="relative mb-1">
@@ -588,18 +526,12 @@ const Dashboard = () => {
             {healthMetrics.ageDistribution && Object.entries(healthMetrics.ageDistribution).map(([group, count], index) => {
               const maxValue = Math.max(...Object.values(healthMetrics.ageDistribution));
               const height = (count / maxValue) * 100;
-              const colors = [
-                'from-blue-400 to-cyan-400',
-                'from-green-400 to-teal-400',
-                'from-yellow-400 to-orange-400',
-                'from-red-400 to-pink-400'
-              ];
               
               return (
                 <div key={group} className="flex flex-col items-center group">
                   <div className="relative mb-1">
                     <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-black/70 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">
-                      {count} patients
+                      {count}%
                     </div>
                     <div 
                       className={`w-12 rounded-t-lg bg-gradient-to-b ${colors[index % colors.length]} shadow-lg hover:w-14 transition-all duration-200`} 
