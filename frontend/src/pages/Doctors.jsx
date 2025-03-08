@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import doctorsData, { specialties, statusOptions } from '../data/doctorsData';
 import AddDoctorModal from '../components/AddDoctorModal';
 import ScheduleAppointmentModal from '../components/ScheduleAppointmentModal';
@@ -10,19 +11,57 @@ const Doctors = () => {
   const [specialtyFilter, setSpecialtyFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
   const [selectedDoctor, setSelectedDoctor] = useState(null);
-  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
-  const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'list'
-  const [isAddDoctorModalOpen, setIsAddDoctorModalOpen] = useState(false);
-  const [isEditProfileModalOpen, setIsEditProfileModalOpen] = useState(false);
+  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editingDoctor, setEditingDoctor] = useState(null);
   const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false);
+  
+  // Animation variants
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: { 
+      opacity: 1,
+      transition: { 
+        staggerChildren: 0.1,
+        delayChildren: 0.2
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: { 
+      y: 0, 
+      opacity: 1,
+      transition: { type: 'spring', stiffness: 100 }
+    }
+  };
+
+  // New doctor form state
+  const [newDoctor, setNewDoctor] = useState({
+    name: '',
+    specialty: '',
+    status: 'active',
+    email: '',
+    phone: '',
+    address: '',
+    education: '',
+    experience: '',
+    bio: '',
+    avatar: ''
+  });
 
   // Load doctors data
   useEffect(() => {
     setDoctors(doctorsData);
+    setFilteredDoctors(doctorsData);
   }, []);
 
   // Filter doctors based on search term, specialty and status
   useEffect(() => {
+    if (!doctors || doctors.length === 0) return;
+    
     let filtered = [...doctors];
     
     // Apply search filter
@@ -30,7 +69,7 @@ const Doctors = () => {
       filtered = filtered.filter(doctor => 
         doctor.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         doctor.specialty.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        doctor.qualification.toLowerCase().includes(searchTerm.toLowerCase())
+        doctor.email.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
     
@@ -49,434 +88,401 @@ const Doctors = () => {
 
   // Helper function to get status color
   const getStatusColor = (status) => {
-    const statusOption = statusOptions.find(option => option.value === status);
-    if (!statusOption) return 'gray';
-    return statusOption.color;
+    switch (status.toLowerCase()) {
+      case 'active':
+        return 'green';
+      case 'on leave':
+      case 'on_leave':
+        return 'yellow';
+      case 'not available':
+      case 'not_available':
+        return 'red';
+      default:
+        return 'gray';
+    }
   };
 
-  // View doctor profile
-  const viewDoctorProfile = (doctor) => {
+  // View doctor details
+  const viewDoctorDetails = (doctor) => {
     setSelectedDoctor(doctor);
-    setIsProfileModalOpen(true);
+    setIsDetailsModalOpen(true);
   };
 
-  // Handle adding a new doctor
-  const handleAddDoctor = (newDoctor) => {
-    // Generate a new ID for the doctor
-    const newId = Math.max(...doctors.map(d => d.id)) + 1;
-    const doctorWithId = {
+  // Handle edit doctor
+  const handleEditDoctor = (doctor) => {
+    setEditingDoctor(doctor);
+    setIsEditModalOpen(true);
+    setIsDetailsModalOpen(false);
+  };
+
+  // Handle doctor form change
+  const handleDoctorFormChange = (e) => {
+    const { name, value } = e.target;
+    if (isEditModalOpen) {
+      setEditingDoctor(prev => ({
+        ...prev,
+        [name]: value
+      }));
+    } else {
+      setNewDoctor(prev => ({
+        ...prev,
+        [name]: value
+      }));
+    }
+  };
+
+  // Save edited doctor
+  const saveEditedDoctor = () => {
+    setDoctors(prev => 
+      prev.map(doctor => 
+        doctor.id === editingDoctor.id ? editingDoctor : doctor
+      )
+    );
+    setIsEditModalOpen(false);
+  };
+
+  // Add new doctor
+  const addNewDoctor = () => {
+    const newDoctorObj = {
+      id: doctors.length + 1,
       ...newDoctor,
-      id: newId,
-      rating: 0,
-      patients: 0,
-      status: 'active'
+      joinDate: new Date().toISOString().split('T')[0]
     };
     
-    setDoctors([...doctors, doctorWithId]);
-    setIsAddDoctorModalOpen(false);
-  };
-
-  // Handle editing a doctor's profile
-  const handleEditProfile = () => {
-    setIsProfileModalOpen(false);
-    setIsEditProfileModalOpen(true);
-  };
-
-  // Handle updating a doctor's profile
-  const handleUpdateDoctor = (updatedDoctor) => {
-    const updatedDoctors = doctors.map(doctor => 
-      doctor.id === updatedDoctor.id ? { ...doctor, ...updatedDoctor } : doctor
-    );
+    setDoctors(prev => [newDoctorObj, ...prev]);
+    setNewDoctor({
+      name: '',
+      specialty: '',
+      status: 'active',
+      email: '',
+      phone: '',
+      address: '',
+      education: '',
+      experience: '',
+      bio: '',
+      avatar: ''
+    });
     
-    setDoctors(updatedDoctors);
-    setSelectedDoctor({ ...selectedDoctor, ...updatedDoctor });
-    setIsEditProfileModalOpen(false);
-    setIsProfileModalOpen(true);
+    setIsAddModalOpen(false);
   };
 
-  // Handle scheduling an appointment with the doctor
-  const handleScheduleAppointment = () => {
-    setIsProfileModalOpen(false);
-    setIsScheduleModalOpen(true);
-  };
-
-  // Handle saving a new appointment
-  const handleSaveAppointment = (appointmentData) => {
-    // Here you would typically save the appointment to your appointments data
-    // For now, we'll just close the modal
-    setIsScheduleModalOpen(false);
-    setIsProfileModalOpen(true); // Return to the doctor profile
-  };
-
-  // Format availability for display
-  const formatAvailability = (availability) => {
-    const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
-    return days.map(day => {
-      const slots = availability[day];
-      if (!slots || slots.length === 0) return null;
-      
-      return (
-        <div key={day} className="mb-2">
-          <span className="capitalize text-white/80">{day}: </span>
-          <span className="text-white/60">{slots.join(', ')}</span>
-        </div>
-      );
-    }).filter(Boolean);
+  // Format status for display
+  const formatStatus = (status) => {
+    return status.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase());
   };
 
   return (
-    <div className="bg-black/30 backdrop-blur-md p-6 rounded-xl border border-white/10 h-full overflow-auto">
-      {/* Header */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
-        <div>
-          <h1 className="text-3xl font-bold text-white mb-2">Doctors</h1>
-          <p className="text-white/70">View and manage doctor profiles</p>
-        </div>
-
-        <div className="flex space-x-3">
-          <div className="flex bg-black/20 rounded-lg p-1">
-            <button 
-              className={`p-2 rounded-md ${viewMode === 'grid' ? 'bg-white/10' : ''}`}
-              onClick={() => setViewMode('grid')}
-            >
-              <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
-              </svg>
-            </button>
-            <button 
-              className={`p-2 rounded-md ${viewMode === 'list' ? 'bg-white/10' : ''}`}
-              onClick={() => setViewMode('list')}
-            >
-              <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
-              </svg>
-            </button>
-          </div>
-          
-          <button 
-            onClick={() => setIsAddDoctorModalOpen(true)}
-            className="px-4 py-2 bg-gradient-to-r from-blue-600 to-teal-500 text-white rounded-lg 
-                     flex items-center gap-2 shadow-lg shadow-blue-500/20 hover:shadow-blue-500/30 
-                     hover:from-blue-700 hover:to-teal-600 transition-all"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
-            </svg>
-            Add Doctor
-          </button>
-        </div>
+    <motion.div 
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+      className="p-6 max-w-7xl mx-auto"
+    >
+      <div className="flex justify-between items-center mb-8">
+        <h1 className="text-3xl font-bold text-white">Medical Doctors Management</h1>
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-cyan-500 text-white rounded-lg shadow-lg"
+          onClick={() => setIsAddModalOpen(true)}
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
+          </svg>
+          Add New Doctor
+        </motion.button>
       </div>
-
-      {/* Filters & Search */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+      
+      {/* Search and Filters */}
+      <motion.div 
+        variants={itemVariants}
+        className="mb-8 space-y-4 bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-4"
+      >
         <div className="relative">
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <svg className="h-5 w-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <input
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder="Search by patient name, age, or gender..."
+            className="w-full px-4 py-3 pl-10 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+          />
+          <div className="absolute right-3 top-3 text-white/50">
+            Press '/' to search
+          </div>
+          <div className="absolute left-3 top-3.5 text-white/50">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
           </div>
-          <input 
-            type="text" 
-            className="block w-full pl-10 pr-3 py-2 bg-black/20 border border-white/10 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent transition-all" 
-            placeholder="Search doctors..." 
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
         </div>
-
-        <select 
-          className="bg-black/20 border border-white/10 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent"
-          value={specialtyFilter}
-          onChange={(e) => setSpecialtyFilter(e.target.value)}
-        >
-          <option value="all" className="bg-gray-800">All Specialties</option>
-          {specialties.map((specialty, index) => (
-            <option key={index} value={specialty} className="bg-gray-800">
-              {specialty}
-            </option>
-          ))}
-        </select>
-
-        <select 
-          className="bg-black/20 border border-white/10 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent"
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
-        >
-          <option value="all" className="bg-gray-800">All Status</option>
-          {statusOptions.map((option, index) => (
-            <option key={index} value={option.value} className="bg-gray-800">
-              {option.label}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      {/* Doctors List */}
-      {filteredDoctors.length === 0 ? (
-        <div className="bg-black/20 rounded-xl p-10 text-center border border-white/5">
-          <svg className="w-16 h-16 mx-auto mb-4 text-white/30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-          </svg>
-          <h3 className="text-xl font-medium text-white mb-2">No doctors found</h3>
-          <p className="text-white/70">Try changing your filters or add a new doctor</p>
-        </div>
-      ) : viewMode === 'grid' ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredDoctors.map((doctor) => (
-            <div 
-              key={doctor.id} 
-              className="bg-black/20 rounded-xl p-5 border border-white/5 hover:border-white/10 transition-all hover-lift cursor-pointer"
-              onClick={() => viewDoctorProfile(doctor)}
-            >
-              <div className="flex items-center mb-4">
-                <div className="w-16 h-16 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center text-white text-xl font-semibold mr-4">
-                  {doctor.name.split(' ').map(n => n[0]).join('')}
-                </div>
-                <div>
-                  <h3 className="text-lg font-semibold text-white">{doctor.name}</h3>
-                  <p className="text-white/70">{doctor.specialty}</p>
-                  <div className={`mt-1 inline-block px-2 py-1 text-xs rounded-full bg-${getStatusColor(doctor.status)}-500/20 text-${getStatusColor(doctor.status)}-400 capitalize`}>
-                    {doctor.status.replace('_', ' ')}
-                  </div>
-                </div>
-              </div>
-              
-              <div className="space-y-2 mb-4">
-                <div className="flex items-center text-white/70 text-sm">
-                  <svg className="w-4 h-4 mr-2 text-white/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                  </svg>
-                  <span>{doctor.qualification}</span>
-                </div>
-                <div className="flex items-center text-white/70 text-sm">
-                  <svg className="w-4 h-4 mr-2 text-white/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  <span>{doctor.experience} years experience</span>
-                </div>
-                <div className="flex items-center text-white/70 text-sm">
-                  <svg className="w-4 h-4 mr-2 text-white/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                  </svg>
-                  <span>{doctor.patients} patients</span>
-                </div>
-              </div>
-              
-              <div className="flex justify-between items-center">
-                <div className="flex items-center">
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <svg 
-                      key={star} 
-                      className={`w-4 h-4 ${star <= Math.floor(doctor.rating) ? 'text-yellow-400' : 'text-gray-400'}`} 
-                      fill="currentColor" 
-                      viewBox="0 0 20 20"
-                    >
-                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                    </svg>
-                  ))}
-                  <span className="ml-1 text-white/70 text-sm">{doctor.rating}</span>
-                </div>
-                
-                <button className="text-blue-400 hover:text-blue-300 text-sm">
-                  View Profile
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-      ) : (
-        <div className="space-y-3">
-          {filteredDoctors.map((doctor) => (
-            <div 
-              key={doctor.id} 
-              className="bg-black/20 rounded-xl p-4 border border-white/5 hover:border-white/10 transition-all cursor-pointer"
-              onClick={() => viewDoctorProfile(doctor)}
-            >
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <div className="flex items-center">
-                  <div className="w-12 h-12 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center text-white font-semibold mr-3">
-                    {doctor.name.split(' ').map(n => n[0]).join('')}
-                  </div>
-                  <div>
-                    <h3 className="text-white font-medium">{doctor.name}</h3>
-                    <div className="flex items-center text-white/70 text-sm">
-                      <span>{doctor.specialty}</span>
-                      <span className="mx-2">•</span>
-                      <span>{doctor.qualification}</span>
-                      <span className="mx-2">•</span>
-                      <span>{doctor.experience} yrs exp.</span>
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="flex items-center space-x-4">
-                  <div className="flex items-center">
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <svg 
-                        key={star} 
-                        className={`w-4 h-4 ${star <= Math.floor(doctor.rating) ? 'text-yellow-400' : 'text-gray-400'}`} 
-                        fill="currentColor" 
-                        viewBox="0 0 20 20"
-                      >
-                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                      </svg>
-                    ))}
-                    <span className="ml-1 text-white/70 text-sm">{doctor.rating}</span>
-                  </div>
-                  
-                  <div className={`px-2 py-1 text-xs rounded-full bg-${getStatusColor(doctor.status)}-500/20 text-${getStatusColor(doctor.status)}-400 capitalize`}>
-                    {doctor.status.replace('_', ' ')}
-                  </div>
-                  
-                  <button className="px-3 py-1 bg-blue-500/10 text-blue-400 rounded-lg hover:bg-blue-500/20 transition-colors text-sm">
-                    View Profile
-                  </button>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* Doctor Profile Modal */}
-      {isProfileModalOpen && selectedDoctor && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setIsProfileModalOpen(false)}></div>
-          <div className="relative bg-[#1a1a1a] border border-white/10 rounded-2xl p-6 max-w-4xl w-full shadow-xl">
+        
+        <div className="flex flex-wrap gap-3">
+          <button 
+            onClick={() => setSpecialtyFilter('all')}
+            className={`px-4 py-2 rounded-lg transition-all ${specialtyFilter === 'all' ? 'bg-blue-600 text-white' : 'bg-white/5 text-white/70 hover:bg-white/10'}`}
+          >
+            All
+          </button>
+          {specialties.map(specialty => (
             <button 
-              onClick={() => setIsProfileModalOpen(false)} 
-              className="absolute top-4 right-4 text-white/50 hover:text-white transition-colors"
+              key={specialty}
+              onClick={() => setSpecialtyFilter(specialty)}
+              className={`px-4 py-2 rounded-lg transition-all ${specialtyFilter === specialty ? 'bg-blue-600 text-white' : 'bg-white/5 text-white/70 hover:bg-white/10'}`}
             >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-              </svg>
+              {specialty}
             </button>
-            
-            <h2 className="text-2xl font-semibold text-white mb-6">Doctor Profile</h2>
-            
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              <div className="flex flex-col items-center">
-                <div className="w-32 h-32 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center text-white text-3xl font-bold mb-4">
-                  {selectedDoctor.name.split(' ').map(n => n[0]).join('')}
-                </div>
-                
-                <h3 className="text-xl font-semibold text-white mb-1">{selectedDoctor.name}</h3>
-                <p className="text-white/70 mb-4">{selectedDoctor.specialty}</p>
-                
-                <div className="bg-green-500/20 text-green-400 px-3 py-1 rounded-full text-sm mb-4">
-                  Active
-                </div>
-                
-                <div className="flex items-center mb-4">
-                  {[1, 2, 3, 4, 5].map(star => (
-                    <svg 
-                      key={star} 
-                      className={`w-4 h-4 ${star <= Math.floor(selectedDoctor.rating) ? 'text-yellow-400' : 'text-gray-500'}`} 
-                      fill="currentColor" 
-                      viewBox="0 0 20 20"
-                    >
-                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                    </svg>
-                  ))}
-                  <span className="ml-1 text-white/70 text-sm">{selectedDoctor.rating}</span>
-                </div>
-                
-                <div className="w-full space-y-3 text-white/80">
-                  <div className="flex items-center">
-                    <svg className="w-5 h-5 mr-3 text-white/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                    </svg>
-                    <span>{selectedDoctor.qualification}</span>
-                  </div>
-                  
-                  <div className="flex items-center">
-                    <svg className="w-5 h-5 mr-3 text-white/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    <span>{selectedDoctor.experience} years experience</span>
-                  </div>
-                  
-                  <div className="flex items-center">
-                    <svg className="w-5 h-5 mr-3 text-white/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                    </svg>
-                    <span>{selectedDoctor.patients} patients</span>
-                  </div>
-                  
-                  <div className="flex items-center">
-                    <svg className="w-5 h-5 mr-3 text-white/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                    </svg>
-                    <span>{selectedDoctor.email}</span>
-                  </div>
-                  
-                  <div className="flex items-center">
-                    <svg className="w-5 h-5 mr-3 text-white/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                    </svg>
-                    <span>{selectedDoctor.phone}</span>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="md:col-span-2">
-                <div className="mb-6">
-                  <h4 className="text-white/80 mb-2 font-medium">Biography</h4>
-                  <div className="bg-black/20 rounded-lg px-4 py-3 text-white/90 border border-white/5">
-                    {selectedDoctor.bio}
-                  </div>
-                </div>
-                
-                <div>
-                  <h4 className="text-white/80 mb-2 font-medium">Availability</h4>
-                  <div className="bg-black/20 rounded-lg px-4 py-3 text-white/90 border border-white/5">
-                    {formatAvailability(selectedDoctor.availability)}
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            <div className="flex justify-end space-x-3 mt-8">
-              <button 
-                onClick={handleEditProfile}
-                className="px-4 py-2 bg-white/10 text-white/80 rounded-lg hover:bg-white/15 hover:text-white transition-colors"
-              >
-                Edit Profile
-              </button>
-              <button 
-                onClick={handleScheduleAppointment}
-                className="px-4 py-2 bg-blue-500/10 text-blue-400 border border-blue-500/20 rounded-lg hover:bg-blue-500/20 transition-colors"
-              >
-                Schedule Appointment
-              </button>
-              <button 
-                onClick={() => setIsProfileModalOpen(false)}
-                className="px-4 py-2 bg-gradient-to-r from-blue-600 to-teal-500 text-white rounded-lg shadow hover:from-blue-700 hover:to-teal-600 transition-all"
-              >
-                Close
-              </button>
-            </div>
+          ))}
+          
+          <div className="ml-auto">
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent transition-all"
+            >
+              <option value="all">All Statuses</option>
+              {statusOptions.map(status => (
+                <option key={status.value} value={status.value}>{status.label}</option>
+              ))}
+            </select>
           </div>
         </div>
-      )}
-
+      </motion.div>
+      
+      {/* Doctors Grid */}
+      <motion.div 
+        variants={containerVariants}
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+      >
+        {filteredDoctors.length === 0 ? (
+          <motion.div 
+            variants={itemVariants}
+            className="col-span-full text-center py-12"
+          >
+            <div className="text-white/50 text-lg">No doctors found</div>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg"
+              onClick={() => setIsAddModalOpen(true)}
+            >
+              Add New Doctor
+            </motion.button>
+          </motion.div>
+        ) : (
+          filteredDoctors.map(doctor => (
+            <motion.div
+              key={doctor.id}
+              variants={itemVariants}
+              whileHover={{ y: -5, transition: { duration: 0.2 } }}
+              className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl overflow-hidden cursor-pointer"
+              onClick={() => viewDoctorDetails(doctor)}
+            >
+              <div className="p-4 space-y-4">
+                <div className="flex justify-between items-center">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center text-white font-semibold">
+                      {doctor.name.charAt(0)}
+                    </div>
+                    <div>
+                      <h3 className="text-white font-medium">{doctor.name}</h3>
+                      <p className="text-white/70 text-sm">{doctor.specialty}</p>
+                    </div>
+                  </div>
+                  <div className={`px-2 py-1 rounded-full text-xs bg-${getStatusColor(doctor.status)}-500/20 text-${getStatusColor(doctor.status)}-400`}>
+                    {formatStatus(doctor.status)}
+                  </div>
+                </div>
+                
+                <div className="space-y-1 text-white/80">
+                  <div className="flex items-center text-white/70">
+                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                    <span className="text-sm">{doctor.email}</span>
+                  </div>
+                  <div className="flex items-center text-white/70">
+                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                    </svg>
+                    <span className="text-sm">{doctor.phone}</span>
+                  </div>
+                </div>
+                
+                <div className="flex justify-between items-center text-sm">
+                  <span className="text-white/50">Experience: {doctor.experience} years</span>
+                  <motion.button 
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="text-blue-400 hover:text-blue-300 transition-colors"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      viewDoctorDetails(doctor);
+                    }}
+                  >
+                    View Profile
+                  </motion.button>
+                </div>
+              </div>
+            </motion.div>
+          ))
+        )}
+      </motion.div>
+      
+      {/* Doctor Details Modal */}
+      <AnimatePresence>
+        {isDetailsModalOpen && selectedDoctor && (
+          <>
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40"
+              onClick={() => setIsDetailsModalOpen(false)}
+            />
+            
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="fixed inset-0 flex items-center justify-center z-50 p-4"
+            >
+              <div className="bg-[#0c1524] border border-white/10 rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+                <div className="p-6">
+                  <div className="flex justify-between items-center mb-6">
+                    <h2 className="text-2xl font-bold text-blue-400">Doctor Profile</h2>
+                    <motion.button 
+                      whileHover={{ scale: 1.1, rotate: 90 }}
+                      whileTap={{ scale: 0.9 }}
+                      onClick={() => setIsDetailsModalOpen(false)}
+                      className="text-white/50 hover:text-white"
+                    >
+                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </motion.button>
+                  </div>
+                  
+                  <div className="space-y-6">
+                    <div className="flex justify-between items-center">
+                      <h3 className="text-white text-lg font-medium">{selectedDoctor.name}</h3>
+                      <div className={`px-3 py-1 rounded-full bg-${getStatusColor(selectedDoctor.status)}-500/20 text-${getStatusColor(selectedDoctor.status)}-400 capitalize`}>
+                        {formatStatus(selectedDoctor.status)}
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center mb-6 bg-white/5 p-3 rounded-lg border border-white/10">
+                      <div className="w-12 h-12 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center text-white font-semibold mr-3">
+                        {selectedDoctor.name.charAt(0)}
+                      </div>
+                      <div>
+                        <p className="text-white font-medium">Specialty: {selectedDoctor.specialty}</p>
+                        <p className="text-white/70 text-sm">Experience: {selectedDoctor.experience} years</p>
+                      </div>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <h4 className="text-white/80 mb-2 font-medium">Contact Information</h4>
+                        <div className="bg-white/5 rounded-lg px-4 py-3 text-white/90 border border-white/10 space-y-2">
+                          <div className="flex items-center">
+                            <svg className="w-4 h-4 mr-2 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                            </svg>
+                            <span>{selectedDoctor.email}</span>
+                          </div>
+                          <div className="flex items-center">
+                            <svg className="w-4 h-4 mr-2 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                            </svg>
+                            <span>{selectedDoctor.phone}</span>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <h4 className="text-white/80 mb-2 font-medium">Qualification</h4>
+                        <div className="bg-white/5 rounded-lg px-4 py-3 text-white/90 border border-white/10">
+                          <p>{selectedDoctor.qualification}</p>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <h4 className="text-white/80 mb-2 font-medium">Biography</h4>
+                      <div className="bg-white/5 rounded-lg px-4 py-3 text-white/90 border border-white/10">
+                        <p>{selectedDoctor.bio}</p>
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <h4 className="text-white/80 mb-2 font-medium">Availability</h4>
+                      <div className="bg-white/5 rounded-lg px-4 py-3 text-white/90 border border-white/10 grid grid-cols-2 gap-2">
+                        {selectedDoctor.availability && Object.entries(selectedDoctor.availability).map(([day, times]) => (
+                          <div key={day} className="text-sm">
+                            <span className="font-medium capitalize">{day}: </span>
+                            {times.length > 0 ? times.join(', ') : 'Not Available'}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="flex justify-end space-x-3 mt-8">
+                    <motion.button 
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      className="px-4 py-2 bg-white/10 text-white/80 rounded-lg transition-all"
+                      onClick={() => {
+                        setIsScheduleModalOpen(true);
+                        setIsDetailsModalOpen(false);
+                      }}
+                    >
+                      Schedule Appointment
+                    </motion.button>
+                    <motion.button 
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      className="px-4 py-2 bg-white/10 text-white/80 rounded-lg transition-all"
+                      onClick={() => handleEditDoctor(selectedDoctor)}
+                    >
+                      Edit Profile
+                    </motion.button>
+                    <motion.button 
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      className="px-4 py-2 bg-gradient-to-r from-blue-600 to-cyan-500 text-white rounded-lg shadow-lg transition-all"
+                      onClick={() => setIsDetailsModalOpen(false)}
+                    >
+                      Close
+                    </motion.button>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+      
       {/* Add Doctor Modal */}
-      {isAddDoctorModalOpen && (
-        <AddDoctorModal
-          onClose={() => setIsAddDoctorModalOpen(false)}
-          onSave={handleAddDoctor}
+      {isAddModalOpen && (
+        <AddDoctorModal 
+          isOpen={isAddModalOpen}
+          onClose={() => setIsAddModalOpen(false)}
+          newDoctor={newDoctor}
+          handleDoctorFormChange={handleDoctorFormChange}
+          addNewDoctor={addNewDoctor}
+          specialties={specialties}
         />
       )}
       
-      {/* Edit Profile Modal */}
-      {isEditProfileModalOpen && selectedDoctor && (
-        <AddDoctorModal
-          onClose={() => {
-            setIsEditProfileModalOpen(false);
-            setIsProfileModalOpen(true);
-          }}
-          onSave={handleUpdateDoctor}
-          initialData={selectedDoctor}
+      {/* Edit Doctor Modal */}
+      {isEditModalOpen && editingDoctor && (
+        <AddDoctorModal 
+          isOpen={isEditModalOpen}
+          onClose={() => setIsEditModalOpen(false)}
+          newDoctor={editingDoctor}
+          handleDoctorFormChange={handleDoctorFormChange}
+          addNewDoctor={saveEditedDoctor}
+          specialties={specialties}
           isEditing={true}
         />
       )}
@@ -484,18 +490,12 @@ const Doctors = () => {
       {/* Schedule Appointment Modal */}
       {isScheduleModalOpen && selectedDoctor && (
         <ScheduleAppointmentModal
-          show={true}
-          onClose={() => {
-            setIsScheduleModalOpen(false);
-            setIsProfileModalOpen(true);
-          }}
-          onSave={handleSaveAppointment}
-          initialData={{
-            doctor: selectedDoctor.name
-          }}
+          isOpen={isScheduleModalOpen}
+          onClose={() => setIsScheduleModalOpen(false)}
+          doctor={selectedDoctor}
         />
       )}
-    </div>
+    </motion.div>
   );
 };
 
