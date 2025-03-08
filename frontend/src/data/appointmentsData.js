@@ -121,14 +121,62 @@ const appointmentsData = [
 
 // Types of appointments
 export const appointmentTypes = [
-  "Consultation",
-  "Follow-up",
-  "Check-up",
-  "Lab Results",
-  "Vaccination",
-  "Surgery",
-  "Emergency",
-  "Therapy"
+  { 
+    value: "consultation", 
+    label: "Consultation", 
+    description: "Initial assessment of symptoms or concerns",
+    icon: "stethoscope",
+    duration: 45
+  },
+  { 
+    value: "followup", 
+    label: "Follow-up", 
+    description: "Review progress after previous treatment",
+    icon: "clipboard-check",
+    duration: 30
+  },
+  { 
+    value: "checkup", 
+    label: "Check-up", 
+    description: "Regular health assessment and monitoring",
+    icon: "heart-pulse",
+    duration: 30
+  },
+  { 
+    value: "labresults", 
+    label: "Lab Results", 
+    description: "Review and discuss laboratory test results",
+    icon: "flask",
+    duration: 15
+  },
+  { 
+    value: "vaccination", 
+    label: "Vaccination", 
+    description: "Scheduled immunization or vaccine administration",
+    icon: "syringe",
+    duration: 15
+  },
+  { 
+    value: "surgery", 
+    label: "Surgery", 
+    description: "Pre-surgical consultation or post-surgical follow-up",
+    icon: "scalpel",
+    duration: 60
+  },
+  { 
+    value: "emergency", 
+    label: "Emergency", 
+    description: "Urgent care for acute conditions",
+    icon: "ambulance",
+    duration: 60
+  },
+  { 
+    value: "therapy", 
+    label: "Therapy", 
+    description: "Ongoing treatment for chronic conditions",
+    icon: "hand-holding-medical",
+    duration: 45
+  }
 ];
 
 // Status options
