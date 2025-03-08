@@ -7,23 +7,26 @@ import Appointments from './pages/Appointments';
 import Doctors from './pages/Doctors';
 import MedicalRecords from './pages/MedicalRecords';
 import Reports from './pages/Reports';
+import { ThemeProvider } from './contexts/ThemeContext';
 
 const App = () => {
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Layout />}>
-          <Route index element={<Navigate to="/dashboard" replace />} />
-          <Route path="dashboard" element={<Dashboard />} />
-          <Route path="patients" element={<Patients />} />
-          <Route path="appointments" element={<Appointments />} />
-          <Route path="doctors" element={<Doctors />} />
-          <Route path="medicalrecords" element={<MedicalRecords />} />
-          <Route path="reports" element={<Reports />} />
-          <Route path="*" element={<Navigate to="/dashboard" replace />} />
-        </Route>
-      </Routes>
-    </Router>
+    <ThemeProvider>
+      <Router>
+        <Routes>
+          <Route path="/" element={<Layout />}>
+            <Route index element={<Navigate to="/dashboard" replace />} />
+            <Route path="dashboard" element={<Dashboard />} />
+            <Route path="patients" element={<Patients />} />
+            <Route path="appointments" element={<Appointments />} />
+            <Route path="doctors" element={<Doctors />} />
+            <Route path="medicalrecords" element={<MedicalRecords />} />
+            <Route path="reports" element={<Reports />} />
+            <Route path="*" element={<Navigate to="/dashboard" replace />} />
+          </Route>
+        </Routes>
+      </Router>
+    </ThemeProvider>
   );
 };
 

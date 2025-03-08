@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useMotionValue, useTransform } from 'framer-motion';
 import dashboardData from '../data/dashboardData';
+import { useTheme } from '../contexts/ThemeContext';
+import { IconButton } from '../components/ui/IconButton';
+import RecentActivity from '../components/RecentActivity';
 
 // Animation variants
 const containerVariants = {
@@ -35,11 +38,203 @@ const glowVariants = {
   }
 };
 
+const floatingAnimation = {
+  initial: { y: 0 },
+  animate: {
+    y: [-5, 5, -5],
+    transition: {
+      duration: 6,
+      repeat: Infinity,
+      ease: "easeInOut"
+    }
+  }
+};
+
+const pulseAnimation = {
+  initial: { scale: 1 },
+  animate: {
+    scale: [1, 1.02, 1],
+    transition: {
+      duration: 2,
+      repeat: Infinity,
+      ease: "easeInOut"
+    }
+  }
+};
+
+const staggerContainer = {
+  initial: { opacity: 0 },
+  animate: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.12,
+      delayChildren: 0.1
+    }
+  }
+};
+
+const slideInUp = {
+  initial: { y: 20, opacity: 0 },
+  animate: {
+    y: 0,
+    opacity: 1,
+    transition: {
+      type: "spring",
+      stiffness: 200,
+      damping: 20
+    }
+  }
+};
+
+const neonGlow = {
+  initial: { opacity: 0.3 },
+  animate: {
+    opacity: [0.3, 0.5, 0.3],
+    transition: {
+      duration: 3,
+      repeat: Infinity,
+      ease: "easeInOut"
+    }
+  }
+};
+
+// Enhanced Animation Variants
+const springTransition = {
+  type: "spring",
+  stiffness: 200,
+  damping: 20
+};
+
+const floatAnimation = {
+  initial: { y: 0 },
+  animate: {
+    y: [-10, 10, -10],
+    transition: {
+      duration: 8,
+      repeat: Infinity,
+      ease: "easeInOut"
+    }
+  }
+};
+
+const hoverSpring = {
+  scale: 1.02,
+  y: -5,
+  transition: springTransition
+};
+
+const cardAnimation = {
+  initial: { opacity: 0, y: 20, scale: 0.95 },
+  animate: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: {
+      ...springTransition,
+      duration: 0.5
+    }
+  },
+  exit: {
+    opacity: 0,
+    scale: 0.95,
+    transition: { duration: 0.2 }
+  }
+};
+
+// Add these new neon animation variants after the existing animations
+const neonPulse = {
+  initial: { opacity: 0.5, filter: 'brightness(1)' },
+  animate: {
+    opacity: [0.5, 0.8, 0.5],
+    filter: ['brightness(1)', 'brightness(1.2)', 'brightness(1)'],
+    transition: {
+      duration: 2,
+      repeat: Infinity,
+      ease: "easeInOut"
+    }
+  }
+};
+
+const neonBorderGlow = {
+  initial: { 
+    boxShadow: '0 0 0 rgba(59, 130, 246, 0)' 
+  },
+  animate: {
+    boxShadow: [
+      '0 0 5px rgba(59, 130, 246, 0.3)',
+      '0 0 20px rgba(59, 130, 246, 0.5)',
+      '0 0 5px rgba(59, 130, 246, 0.3)'
+    ],
+    transition: {
+      duration: 2,
+      repeat: Infinity,
+      ease: "easeInOut"
+    }
+  }
+};
+
+// Add these new animation variants
+const futuristicGlow = {
+  initial: { opacity: 0.3, scale: 1 },
+  animate: {
+    opacity: [0.3, 0.6, 0.3],
+    scale: [1, 1.02, 1],
+    filter: [
+      'brightness(1) blur(4px)',
+      'brightness(1.2) blur(8px)',
+      'brightness(1) blur(4px)'
+    ],
+    transition: {
+      duration: 4,
+      repeat: Infinity,
+      ease: "easeInOut"
+    }
+  }
+};
+
+const neonText = {
+  initial: { textShadow: '0 0 0px rgba(59, 130, 246, 0)' },
+  animate: {
+    textShadow: [
+      '0 0 5px rgba(59, 130, 246, 0.5)',
+      '0 0 20px rgba(59, 130, 246, 0.8)',
+      '0 0 5px rgba(59, 130, 246, 0.5)'
+    ],
+    transition: {
+      duration: 2,
+      repeat: Infinity,
+      ease: "easeInOut"
+    }
+  }
+};
+
+// Add these new color-specific animation variants
+const oceanGlow = {
+  initial: { opacity: 0.3 },
+  animate: {
+    opacity: [0.3, 0.6, 0.3],
+    scale: [1, 1.02, 1],
+    filter: [
+      'brightness(1) blur(4px)',
+      'brightness(1.3) blur(8px)',
+      'brightness(1) blur(4px)'
+    ],
+    transition: {
+      duration: 3,
+      repeat: Infinity,
+      ease: "easeInOut"
+    }
+  }
+};
+
 const Dashboard = () => {
+  const { isDark, toggleTheme } = useTheme();
   const [stats, setStats] = useState([]);
   const [recentActivity, setRecentActivity] = useState([]);
   const [upcomingAppointments, setUpcomingAppointments] = useState([]);
   const [healthMetrics, setHealthMetrics] = useState({});
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
 
   useEffect(() => {
     // Load mock data
@@ -48,6 +243,13 @@ const Dashboard = () => {
     setUpcomingAppointments(dashboardData.upcomingAppointments);
     setHealthMetrics(dashboardData.healthMetrics);
   }, []);
+
+  const handleMouseMove = (e) => {
+    const { currentTarget, clientX, clientY } = e;
+    const { left, top } = currentTarget.getBoundingClientRect();
+    mouseX.set(clientX - left);
+    mouseY.set(clientY - top);
+  };
 
   // Helper function to get icon based on activity type
   const getActivityIcon = (type) => {
@@ -137,94 +339,75 @@ const Dashboard = () => {
   };
 
   return (
-    <motion.div 
-      variants={containerVariants}
-      initial="initial"
-      animate="animate"
-      className="relative bg-black/30 backdrop-blur-xl p-6 rounded-2xl border border-white/10 h-full overflow-auto"
-    >
-      {/* Decorative Background Elements */}
-      <div className="absolute inset-0 overflow-hidden rounded-2xl pointer-events-none">
-        <motion.div 
-          variants={glowVariants}
-          className="absolute top-0 -right-40 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl"
-        />
-        <motion.div 
-          variants={glowVariants}
-          className="absolute -bottom-20 -left-40 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl"
-        />
+    <div className="space-y-10 px-2">
+      {/* Header Section */}
+      <div className="flex justify-between items-center mb-8">
+        <motion.div className="space-y-2">
+          <h1 className="text-4xl font-bold text-white">Dashboard</h1>
+          <p className="text-slate-400">Welcome back, Dr. Martin</p>
+        </motion.div>
       </div>
 
-      {/* Enhanced Header */}
-      <motion.div 
-        variants={cardVariants}
-        className="relative mb-8"
-      >
-        <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400 mb-2">
-          Dashboard
-        </h1>
-        <p className="text-white/70">Welcome back, Dr. Martin. Here's what's happening today.</p>
-      </motion.div>
-
-      {/* Enhanced Stats Cards */}
-      <motion.div 
-        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8"
-        variants={containerVariants}
-      >
+      {/* Stats Grid - Improved spacing */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
         {stats.map((stat) => (
           <motion.div
             key={stat.id}
-            variants={cardVariants}
-            whileHover={{ scale: 1.02, transition: { duration: 0.2 } }}
-            className="relative group bg-black/20 rounded-xl p-5 border border-white/5 overflow-hidden"
+            variants={cardAnimation}
+            whileHover={{ 
+              scale: 1.02,
+              transition: { type: "spring", stiffness: 300 }
+            }}
+            className="relative group backdrop-blur-xl bg-white/5 rounded-xl p-5 border border-white/10 shadow-lg overflow-hidden"
           >
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-            <div className="relative flex justify-between">
-              <div>
-                <p className="text-white/70 text-sm mb-1">{stat.title}</p>
-                <h3 className="text-2xl font-bold text-white mb-3">{stat.value}</h3>
-                <motion.span 
-                  whileHover={{ scale: 1.05 }}
-                  className={`text-sm px-2 py-1 rounded-full ${
-                    stat.isPositive ? 'bg-green-500/10 text-green-400' : 'bg-red-500/10 text-red-400'
-                  }`}
-                >
-                  {stat.change}
-                </motion.span>
+            {/* Card Glow */}
+            <motion.div
+              variants={oceanGlow}
+              className="absolute inset-0 bg-gradient-to-r from-emerald-500/10 via-blue-500/10 to-teal-500/10 rounded-xl blur-xl"
+            />
+            
+            <div className="relative z-10">
+              <div className="flex justify-between">
+                <div>
+                  <p className="text-emerald-100/70 text-sm mb-1">{stat.title}</p>
+                  <h3 className="text-2xl font-bold text-white mb-3">{stat.value}</h3>
+                  <motion.span 
+                    whileHover={{ scale: 1.05 }}
+                    className={`text-sm px-2 py-1 rounded-full ${
+                      stat.isPositive 
+                        ? 'bg-emerald-500/20 text-emerald-400' 
+                        : 'bg-red-500/20 text-red-400'
+                    }`}
+                  >
+                    {stat.change}
+                  </motion.span>
+                </div>
+                {getStatIcon(stat.icon, 'emerald')}
               </div>
-              {getStatIcon(stat.icon, stat.color)}
             </div>
           </motion.div>
         ))}
-      </motion.div>
+      </div>
 
-      {/* Two Column Layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-        {/* Recent Activity */}
-        <div className="bg-black/20 rounded-xl p-5 border border-white/5">
-          <h2 className="text-xl font-semibold text-white mb-4">Recent Activity</h2>
-          <div className="space-y-4">
-            {recentActivity.map((activity) => (
-              <div key={activity.id} className="flex items-start space-x-4 p-3 rounded-lg hover:bg-white/5 transition-colors">
-                {getActivityIcon(activity.type)}
-                <div>
-                  <p className="text-white/90">{activity.message}</p>
-                  <span className="text-white/50 text-sm">{activity.time}</span>
-                </div>
-              </div>
-            ))}
-          </div>
+      {/* Activity and Appointments Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
+        <div className="">
+          <RecentActivity />
         </div>
 
         {/* Upcoming Appointments */}
-        <div className="bg-black/20 rounded-xl p-5 border border-white/5">
-          <h2 className="text-xl font-semibold text-white mb-4">Upcoming Appointments</h2>
+        <motion.div className="space-y-6">
+          <h2 className="text-xl font-semibold text-white mb-6">Upcoming Appointments</h2>
           <div className="space-y-3">
             {upcomingAppointments.map((appointment) => (
-              <div key={appointment.id} className="bg-black/30 rounded-lg p-3 hover:bg-black/40 transition-colors">
+              <motion.div 
+                key={appointment.id}
+                whileHover={{ scale: 1.02 }}
+                className="backdrop-blur-md bg-white/5 rounded-lg p-3 border border-white/5 hover:bg-white/10 transition-colors mb-3"
+              >
                 <div className="flex justify-between items-start mb-2">
                   <h4 className="font-medium text-white">{appointment.patientName}</h4>
-                  <span className="px-2 py-1 text-xs bg-blue-500/20 text-blue-400 rounded-full">
+                  <span className="px-2 py-1 text-xs bg-emerald-500/20 text-emerald-400 rounded-full">
                     {appointment.purpose}
                   </span>
                 </div>
@@ -234,116 +417,55 @@ const Dashboard = () => {
                   </svg>
                   <span>{appointment.date} at {appointment.time}</span>
                 </div>
-              </div>
+              </motion.div>
             ))}
-            <button className="w-full mt-3 py-2 bg-black/30 border border-white/10 text-white/80 rounded-lg hover:bg-black/40 hover:text-white transition-colors">
+            
+            <motion.button 
+              whileHover={{ scale: 1.02 }}
+              className="w-full mt-3 py-2 backdrop-blur-md bg-white/5 border border-white/10 text-white/80 rounded-lg hover:bg-white/10 hover:text-white transition-colors"
+            >
               View All Appointments
-            </button>
+            </motion.button>
           </div>
-        </div>
+        </motion.div>
       </div>
 
-      {/* Patient Growth Chart */}
-      <motion.div 
-        variants={cardVariants}
-        className="bg-white/5 backdrop-blur-lg rounded-xl p-5 border border-white/10"
-      >
-        <h2 className="text-xl font-semibold text-white mb-4">Patient Growth</h2>
-        <div className="h-64 flex items-end justify-between px-2">
-          {healthMetrics.patientGrowth && healthMetrics.patientGrowth.map((value, index) => {
-            const maxValue = Math.max(...healthMetrics.patientGrowth);
-            const height = (value / maxValue) * 100;
-            return (
-              <motion.div 
-                key={index} 
-                className="relative group"
-                whileHover={{ scale: 1.1 }}
-              >
-                <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-black/70 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">
-                  {value}
-                </div>
-                <motion.div 
-                  initial={{ height: 0 }}
-                  animate={{ height: `${height}%` }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                  className="w-6 bg-gradient-to-t from-[#1E88E5] to-[#00BFA5] rounded-t-sm"
-                />
-                <div className="text-white/50 text-xs mt-2">
-                  {['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][index]}
-                </div>
-              </motion.div>
-            );
-          })}
-        </div>
-      </motion.div>
-
-      {/* Appointment Distribution and Age Distribution */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="bg-black/20 rounded-xl p-5 border border-white/5">
-          <h2 className="text-xl font-semibold text-white mb-4">Appointment Types</h2>
-          <div className="flex justify-center">
-            <div className="w-48 h-48">
-              {healthMetrics.appointmentDistribution && (
-                <div className="relative w-full h-full">
-                  <svg viewBox="0 0 100 100" className="w-full h-full">
-                    {healthMetrics.appointmentDistribution.map((item, index) => {
-                      const total = healthMetrics.appointmentDistribution.reduce((sum, i) => sum + i.value, 0);
-                      const colors = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444'];
-                      let startAngle = 0;
-                      let endAngle = 0;
-                      
-                      // Calculate the previous segments
-                      for (let i = 0; i < index; i++) {
-                        startAngle += (healthMetrics.appointmentDistribution[i].value / total) * 360;
-                      }
-                      
-                      endAngle = startAngle + (item.value / total) * 360;
-                      
-                      // Convert to radians
-                      const startRad = (startAngle - 90) * Math.PI / 180;
-                      const endRad = (endAngle - 90) * Math.PI / 180;
-                      
-                      // Calculate SVG path
-                      const x1 = 50 + 40 * Math.cos(startRad);
-                      const y1 = 50 + 40 * Math.sin(startRad);
-                      const x2 = 50 + 40 * Math.cos(endRad);
-                      const y2 = 50 + 40 * Math.sin(endRad);
-                      
-                      // Large arc flag
-                      const largeArcFlag = endAngle - startAngle <= 180 ? 0 : 1;
-                      
-                      const pathData = `M 50 50 L ${x1} ${y1} A 40 40 0 ${largeArcFlag} 1 ${x2} ${y2} Z`;
-                      
-                      return (
-                        <path 
-                          key={index} 
-                          d={pathData} 
-                          fill={colors[index % colors.length]} 
-                          className="hover:opacity-90 transition-opacity cursor-pointer"
-                        />
-                      );
-                    })}
-                    <circle cx="50" cy="50" r="20" fill="#111827" />
-                  </svg>
-                </div>
-              )}
-            </div>
-          </div>
-          <div className="mt-4 grid grid-cols-2 gap-2">
-            {healthMetrics.appointmentDistribution && healthMetrics.appointmentDistribution.map((item, index) => {
-              const colors = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444'];
+      {/* Charts Section - Improved spacing */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
+        {/* Patient Growth Chart */}
+        <motion.div className="p-6 rounded-2xl bg-white/5 backdrop-blur-sm">
+          <h2 className="text-xl font-semibold text-white mb-6">Patient Growth</h2>
+          <div className="h-64 flex items-end justify-between px-2">
+            {healthMetrics.patientGrowth && healthMetrics.patientGrowth.map((value, index) => {
+              const maxValue = Math.max(...healthMetrics.patientGrowth);
+              const height = (value / maxValue) * 100;
               return (
-                <div key={index} className="flex items-center">
-                  <div className="w-3 h-3 rounded-full mr-2" style={{ backgroundColor: colors[index % colors.length] }}></div>
-                  <span className="text-white/80 text-sm">{item.name}</span>
-                </div>
+                <motion.div 
+                  key={index} 
+                  className="relative group"
+                  whileHover={{ scale: 1.1 }}
+                >
+                  <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-black/70 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">
+                    {value}
+                  </div>
+                  <motion.div 
+                    initial={{ height: 0 }}
+                    animate={{ height: `${height}%` }}
+                    transition={{ duration: 0.5, delay: index * 0.1 }}
+                    className="w-6 bg-gradient-to-t from-[#1E88E5] to-[#00BFA5] rounded-t-sm"
+                  />
+                  <div className="text-white/50 text-xs mt-2">
+                    {['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][index]}
+                  </div>
+                </motion.div>
               );
             })}
           </div>
-        </div>
-        
-        <div className="bg-black/20 rounded-xl p-5 border border-white/5">
-          <h2 className="text-xl font-semibold text-white mb-4">Age Distribution</h2>
+        </motion.div>
+
+        {/* Age Distribution Chart */}
+        <motion.div className="p-6 rounded-2xl bg-white/5 backdrop-blur-sm">
+          <h2 className="text-xl font-semibold text-white mb-6">Age Distribution</h2>
           <div className="flex h-48 items-end justify-around">
             {healthMetrics.ageDistribution && Object.entries(healthMetrics.ageDistribution).map(([group, count], index) => {
               const colors = ['from-blue-500 to-blue-700', 'from-green-500 to-green-700', 'from-yellow-500 to-yellow-700', 'from-red-500 to-red-700'];
@@ -366,9 +488,9 @@ const Dashboard = () => {
               );
             })}
           </div>
-        </div>
+        </motion.div>
       </div>
-    </motion.div>
+    </div>
   );
 };
 

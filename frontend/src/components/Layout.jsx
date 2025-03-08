@@ -1,27 +1,44 @@
 import React from 'react';
-import { Outlet } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Outlet, useLocation } from 'react-router-dom';
 import Sidebar from './Sidebar';
 
 const Layout = () => {
+  const location = useLocation();
+  
   return (
-    <div className="flex min-h-screen bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900 relative">
-      {/* Background decoration */}
-      <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
-        <div className="absolute top-0 -right-40 w-80 h-80 bg-pink-500 opacity-20 rounded-full blur-3xl"></div>
-        <div className="absolute top-1/4 left-10 w-80 h-80 bg-blue-500 opacity-10 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-0 right-1/3 w-80 h-80 bg-purple-500 opacity-10 rounded-full blur-3xl"></div>
+    <motion.div className="flex min-h-screen bg-gradient-to-br from-emerald-900/90 via-blue-900/90 to-teal-900/90">
+      {/* Background Effect */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <motion.div 
+          animate={{
+            opacity: [0.07, 0.14, 0.07],
+            scale: [1, 1.1, 1],
+          }}
+          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute top-0 -right-40 w-[600px] h-[600px] bg-emerald-400 rounded-full blur-3xl"
+        />
       </div>
       
       {/* Content */}
-      <div className="flex w-full z-10 relative">
+      <div className="flex w-full relative z-10">
         <Sidebar />
-        <main className="flex-1 p-6 overflow-hidden">
-          <div className="max-w-7xl mx-auto h-full">
-            <Outlet />
-          </div>
+        <main className="flex-1 p-8">
+          <AnimatePresence mode="wait">
+            <motion.div 
+              key={location.pathname}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.3 }}
+              className="h-full"
+            >
+              <Outlet />
+            </motion.div>
+          </AnimatePresence>
         </main>
       </div>
-    </div>
+    </motion.div>
   );
 };
 
