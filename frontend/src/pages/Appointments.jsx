@@ -285,12 +285,12 @@ const Appointments = () => {
         {isDetailsModalOpen && selectedAppointment && (
           <>
             <motion.div 
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              className="fixed inset-0 flex items-center justify-center z-50"
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="fixed inset-0 flex items-center justify-center z-50 p-4"
             >
-              <div className="bg-black/30 backdrop-blur-md p-6 rounded-xl shadow-lg w-full max-w-2xl relative z-10 border border-white/10">
+              <div className="glassmorphism p-6 rounded-xl shadow-lg w-full max-w-2xl relative z-10 border border-white/10">
                 <div className="flex justify-between items-center mb-6">
                   <h2 className="text-xl font-semibold text-white">Appointment Details</h2>
                   <button 
@@ -388,7 +388,7 @@ const Appointments = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black/50 backdrop-blur-sm"
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm"
               onClick={() => setIsDetailsModalOpen(false)}
             />
           </>
