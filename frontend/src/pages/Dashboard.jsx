@@ -4,6 +4,7 @@ import dashboardData from '../data/dashboardData';
 import { useTheme } from '../contexts/ThemeContext';
 import { IconButton } from '../components/ui/IconButton';
 import RecentActivity from '../components/RecentActivity';
+import axios from 'axios'; // Make sure axios is installed: npm install axios
 
 // Animation variants
 const containerVariants = {
@@ -232,16 +233,42 @@ const Dashboard = () => {
   const [stats, setStats] = useState([]);
   const [recentActivity, setRecentActivity] = useState([]);
   const [upcomingAppointments, setUpcomingAppointments] = useState([]);
-  const [healthMetrics, setHealthMetrics] = useState({});
+  const [healthMetrics, setHealthMetrics] = useState({
+    patientGrowth: [],
+    appointmentDistribution: [],
+    ageDistribution: {}
+  });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
 
   useEffect(() => {
-    // Load mock data
-    setStats(dashboardData.stats);
-    setRecentActivity(dashboardData.recentActivity);
-    setUpcomingAppointments(dashboardData.upcomingAppointments);
-    setHealthMetrics(dashboardData.healthMetrics);
+    const fetchDashboardData = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await axios.get('http://localhost:3000/api/dashboard');
+        const data = response.data;
+        
+        setStats(data.stats || []);
+        setRecentActivity(data.recentActivity || []);
+        setUpcomingAppointments(data.upcomingAppointments || []);
+        setHealthMetrics({
+          patientGrowth: data.healthMetrics?.patientGrowth || [],
+          appointmentDistribution: data.healthMetrics?.appointmentDistribution || [],
+          ageDistribution: data.healthMetrics?.ageDistribution || {}
+        });
+      } catch (error) {
+        console.error('Error fetching dashboard data:', error);
+        setError('Failed to load dashboard data');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDashboardData();
   }, []);
 
   const handleMouseMove = (e) => {
@@ -291,52 +318,61 @@ const Dashboard = () => {
 
   // Helper function to get icon for stat cards
   const getStatIcon = (icon, color) => {
-    const bgColorClass = `bg-${color}-500/10`;
-    const textColorClass = `text-${color}-500`;
+    const iconComponents = {
+      patients: (
+        <div className={`w-12 h-12 rounded-full bg-${color}-500/10 flex items-center justify-center`}>
+          <svg className={`w-7 h-7 text-${color}-500`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+          </svg>
+        </div>
+      ),
+      calendar: (
+        <div className={`w-12 h-12 rounded-full bg-${color}-500/10 flex items-center justify-center`}>
+          <svg className={`w-7 h-7 text-${color}-500`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+          </svg>
+        </div>
+      ),
+      clock: (
+        <div className={`w-12 h-12 rounded-full bg-${color}-500/10 flex items-center justify-center`}>
+          <svg className={`w-7 h-7 text-${color}-500`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+      ),
+      document: (
+        <div className={`w-12 h-12 rounded-full bg-${color}-500/10 flex items-center justify-center`}>
+          <svg className={`w-7 h-7 text-${color}-500`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
+        </div>
+      )
+    };
 
-    switch (icon) {
-      case 'patients':
-        return (
-          <div className={`w-12 h-12 rounded-full ${bgColorClass} flex items-center justify-center`}>
-            <svg className={`w-7 h-7 ${textColorClass}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-            </svg>
-          </div>
-        );
-      case 'calendar':
-        return (
-          <div className={`w-12 h-12 rounded-full ${bgColorClass} flex items-center justify-center`}>
-            <svg className={`w-7 h-7 ${textColorClass}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-            </svg>
-          </div>
-        );
-      case 'clock':
-        return (
-          <div className={`w-12 h-12 rounded-full ${bgColorClass} flex items-center justify-center`}>
-            <svg className={`w-7 h-7 ${textColorClass}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-          </div>
-        );
-      case 'document':
-        return (
-          <div className={`w-12 h-12 rounded-full ${bgColorClass} flex items-center justify-center`}>
-            <svg className={`w-7 h-7 ${textColorClass}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
-          </div>
-        );
-      default:
-        return (
-          <div className={`w-12 h-12 rounded-full ${bgColorClass} flex items-center justify-center`}>
-            <svg className={`w-7 h-7 ${textColorClass}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-          </div>
-        );
-    }
+    return iconComponents[icon] || null;
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen text-white">
+        <div className="text-red-500 text-xl mb-4">⚠️ {error}</div>
+        <button
+          onClick={() => window.location.reload()}
+          className="px-4 py-2 bg-blue-500 rounded-lg hover:bg-blue-600 transition-colors"
+        >
+          Retry
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-10 px-2">
@@ -348,24 +384,17 @@ const Dashboard = () => {
         </motion.div>
       </div>
 
-      {/* Stats Grid - Improved spacing */}
+      {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-        {stats.map((stat) => (
+        {stats && stats.map((stat) => (
           <motion.div
             key={stat.id}
-            variants={cardAnimation}
             whileHover={{ 
               scale: 1.02,
               transition: { type: "spring", stiffness: 300 }
             }}
             className="relative group backdrop-blur-xl bg-white/5 rounded-xl p-5 border border-white/10 shadow-lg overflow-hidden"
           >
-            {/* Card Glow */}
-            <motion.div
-              variants={oceanGlow}
-              className="absolute inset-0 bg-gradient-to-r from-emerald-500/10 via-blue-500/10 to-teal-500/10 rounded-xl blur-xl"
-            />
-            
             <div className="relative z-10">
               <div className="flex justify-between">
                 <div>
@@ -382,7 +411,7 @@ const Dashboard = () => {
                     {stat.change}
                   </motion.span>
                 </div>
-                {getStatIcon(stat.icon, 'emerald')}
+                {getStatIcon(stat.icon, stat.color)}
               </div>
             </div>
           </motion.div>
@@ -391,15 +420,33 @@ const Dashboard = () => {
 
       {/* Activity and Appointments Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
+        {/* Recent Activity */}
         <div className="">
-          <RecentActivity />
+          <h2 className="text-xl font-semibold text-white mb-6">Recent Activity</h2>
+          <div className="space-y-4">
+            {recentActivity && recentActivity.map((activity) => (
+              <motion.div
+                key={activity.id}
+                whileHover={{ scale: 1.02 }}
+                className="backdrop-blur-md bg-white/5 rounded-lg p-4 border border-white/5"
+              >
+                <div className="flex items-start space-x-4">
+                  {getActivityIcon(activity.type)}
+                  <div className="flex-1">
+                    <p className="text-white">{activity.message}</p>
+                    <p className="text-sm text-white/50 mt-1">{activity.time}</p>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
         </div>
 
         {/* Upcoming Appointments */}
         <motion.div className="space-y-6">
           <h2 className="text-xl font-semibold text-white mb-6">Upcoming Appointments</h2>
           <div className="space-y-3">
-            {upcomingAppointments.map((appointment) => (
+            {upcomingAppointments && upcomingAppointments.map((appointment) => (
               <motion.div 
                 key={appointment.id}
                 whileHover={{ scale: 1.02 }}
@@ -419,18 +466,11 @@ const Dashboard = () => {
                 </div>
               </motion.div>
             ))}
-            
-            <motion.button 
-              whileHover={{ scale: 1.02 }}
-              className="w-full mt-3 py-2 backdrop-blur-md bg-white/5 border border-white/10 text-white/80 rounded-lg hover:bg-white/10 hover:text-white transition-colors"
-            >
-              View All Appointments
-            </motion.button>
           </div>
         </motion.div>
       </div>
 
-      {/* Charts Section - Improved spacing */}
+      {/* Charts Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
         {/* Patient Growth Chart */}
         <motion.div className="p-6 rounded-2xl bg-white/5 backdrop-blur-sm">
@@ -438,7 +478,7 @@ const Dashboard = () => {
           <div className="h-64 flex items-end justify-between px-2">
             {healthMetrics.patientGrowth && healthMetrics.patientGrowth.map((value, index) => {
               const maxValue = Math.max(...healthMetrics.patientGrowth);
-              const height = (value / maxValue) * 100;
+              const height = maxValue > 0 ? (value / maxValue) * 100 : 0;
               return (
                 <motion.div 
                   key={index} 
@@ -470,13 +510,13 @@ const Dashboard = () => {
             {healthMetrics.ageDistribution && Object.entries(healthMetrics.ageDistribution).map(([group, count], index) => {
               const colors = ['from-blue-500 to-blue-700', 'from-green-500 to-green-700', 'from-yellow-500 to-yellow-700', 'from-red-500 to-red-700'];
               const maxValue = Math.max(...Object.values(healthMetrics.ageDistribution));
-              const height = (count / maxValue) * 100;
+              const height = maxValue > 0 ? (count / maxValue) * 100 : 0;
               
               return (
                 <div key={index} className="flex flex-col items-center group">
                   <div className="relative mb-1">
                     <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-black/70 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">
-                      {count}%
+                      {count}
                     </div>
                     <div 
                       className={`w-12 rounded-t-lg bg-gradient-to-b ${colors[index % colors.length]} shadow-lg hover:w-14 transition-all duration-200`} 

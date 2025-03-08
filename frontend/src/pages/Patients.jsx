@@ -6,7 +6,28 @@ import DeleteConfirmationModal from '../components/DeleteConfirmationModal';
 import AgeChart from '../components/AgeChart';
 import GenderChart from '../components/GenderChart';
 import Notification from '../components/Notification';
-import patientsData from '../data/patientsData';
+import axios from 'axios';
+
+// Add animation variants
+const containerVariants = {
+  initial: { opacity: 0 },
+  animate: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+      delayChildren: 0.2
+    }
+  }
+};
+
+const cardVariants = {
+  initial: { opacity: 0, y: 20 },
+  animate: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.4 }
+  }
+};
 
 const Patients = () => {
   // State variables
@@ -18,69 +39,94 @@ const Patients = () => {
   const [showAddModal, setShowAddModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [patientToDelete, setPatientToDelete] = useState(null);
-  const [notification, setNotification] = useState({ show: false, message: '' });
-
-  // Load mock data on component mount
-  useEffect(() => {
-    // In a real app, this would be a fetch call to an API
-    setPatients(patientsData);
-  }, []);
-
-  // Filter and sort patients whenever dependencies change
-  useEffect(() => {
-    filterAndSortPatients();
-  }, [patients, currentFilter, currentSort, searchTerm]);
-
-  // Filter and sort patients based on current criteria
-  const filterAndSortPatients = () => {
-    let result = [...patients];
-    
-    // Apply gender filter
-    if (currentFilter !== 'all') {
-      result = result.filter(p => p.gender === currentFilter);
+  const [notification, setNotification] = useState({ show: false, message: '', type: 'success' });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [stats, setStats] = useState({
+    total: 0,
+    gender: {
+      male: 0,
+      female: 0
+    },
+    ageGroups: {
+      '0-18': 0,
+      '19-35': 0,
+      '36-50': 0,
+      '51+': 0
     }
-    
-    // Apply search filter
-    if (searchTerm) {
-      result = result.filter(p =>
-        p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        p.age.toString().includes(searchTerm) ||
-        p.gender.toLowerCase().includes(searchTerm.toLowerCase())
-      );
+  });
+
+  // Fetch patients data
+  const fetchPatients = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get('http://localhost:3000/api/patients', {
+        params: {
+          search: searchTerm,
+          filter: currentFilter,
+          sort: currentSort
+        }
+      });
+      
+      if (response.data && response.data.patients) {
+        setPatients(response.data.patients);
+        setFilteredPatients(response.data.patients);
+        setStats(response.data.stats);
+      } else {
+        throw new Error('Invalid data format received from server');
+      }
+      setError(null);
+    } catch (err) {
+      console.error('Error fetching patients:', err);
+      setError(err.response?.data?.error || 'Failed to load patients. Please try again.');
+    } finally {
+      setLoading(false);
     }
-    
-    // Apply sorting
-    if (currentSort === 'age') {
-      result = result.sort((a, b) => a.age - b.age);
-    }
-    
-    setFilteredPatients(result);
   };
 
+  // Load patients on component mount and when filters change
+  useEffect(() => {
+    fetchPatients();
+  }, [searchTerm, currentFilter, currentSort]);
+
   // Add a new patient
-  const addPatient = (patientData) => {
-    const newPatient = {
-      ...patientData,
-      id: patients.length > 0 ? Math.max(...patients.map(p => p.id)) + 1 : 1
-    };
-    
-    setPatients([...patients, newPatient]);
-    setShowAddModal(false);
-    showNotification('Patient added successfully');
+  const addPatient = async (patientData) => {
+    try {
+      const response = await axios.post('http://localhost:3000/api/patients', patientData, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      if (response.data) {
+        await fetchPatients(); // Refresh the list
+        setShowAddModal(false);
+        showNotification('Patient added successfully', 'success');
+      }
+    } catch (error) {
+      console.error('Error adding patient:', error);
+      showNotification(error.response?.data?.error || 'Failed to add patient', 'error');
+    }
   };
 
   // Delete a patient
-  const deletePatient = (patientId) => {
-    setPatients(patients.filter(p => p.id !== patientId));
-    setShowDeleteModal(false);
-    showNotification('Patient deleted successfully');
+  const deletePatient = async (patientId) => {
+    try {
+      await axios.delete(`http://localhost:3000/api/patients/${patientId}`);
+      await fetchPatients(); // Refresh the list
+      setShowDeleteModal(false);
+      showNotification('Patient deleted successfully', 'success');
+    } catch (error) {
+      console.error('Error deleting patient:', error);
+      showNotification(error.response?.data?.error || 'Failed to delete patient', 'error');
+    }
   };
 
   // Show notification
-  const showNotification = (message) => {
-    setNotification({ show: true, message });
+  const showNotification = (message, type = 'success') => {
+    setNotification({ show: true, message, type });
     setTimeout(() => {
-      setNotification({ show: false, message: '' });
+      setNotification({ show: false, message: '', type: 'success' });
     }, 3000);
   };
 
@@ -90,11 +136,27 @@ const Patients = () => {
     setShowDeleteModal(true);
   };
 
-  // Handle form submission in AddPatientModal
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    // Implementation of form submission logic
-  };
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen text-white">
+        <div className="text-red-500 text-xl mb-4">⚠️ {error}</div>
+        <button
+          onClick={fetchPatients}
+          className="px-4 py-2 bg-blue-500 rounded-lg hover:bg-blue-600 transition-colors"
+        >
+          Retry
+        </button>
+      </div>
+    );
+  }
 
   return (
     <motion.div 
@@ -248,75 +310,73 @@ const Patients = () => {
 
       {/* Patient Cards Grid */}
       <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+        variants={containerVariants}
+        initial="initial"
+        animate="animate"
       >
-        {filteredPatients.length === 0 ? (
-          <div className="col-span-full">
-            <EmptyState />
-          </div>
-        ) : (
-          filteredPatients.map(patient => (
-            <PatientCard 
-              key={patient.id} 
-              patient={patient} 
-              onDelete={openDeleteModal}
-            />
+        {filteredPatients.length > 0 ? (
+          filteredPatients.map((patient) => (
+            <motion.div
+              key={`patient-${patient.id}-${patient.name}`}
+              variants={cardVariants}
+              className="relative"
+            >
+              <PatientCard
+                patient={patient}
+                onDelete={() => openDeleteModal(patient.id)}
+              />
+            </motion.div>
           ))
+        ) : (
+          <EmptyState />
         )}
       </motion.div>
 
-      {/* Charts Section */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <motion.div 
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          className="p-6 rounded-2xl bg-white/[0.05] backdrop-blur-sm border border-white/[0.05]"
-        >
-          <h3 className="text-xl font-semibold text-white mb-6">Age Distribution</h3>
-          <AgeChart patients={patients} />
-        </motion.div>
-
-        <motion.div 
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          className="p-6 rounded-2xl bg-white/[0.05] backdrop-blur-sm border border-white/[0.05]"
-        >
-          <h3 className="text-xl font-semibold text-white mb-6">Gender Distribution</h3>
-          <GenderChart patients={patients} />
-        </motion.div>
-      </div>
-
       {/* Modals */}
-      <AddPatientModal 
-        show={showAddModal}
-        onClose={() => setShowAddModal(false)}
-        onSave={addPatient}
-      />
-      <DeleteConfirmationModal
-        show={showDeleteModal}
-        onClose={() => setShowDeleteModal(false)}
-        onConfirm={() => deletePatient(patientToDelete)}
-        title="Delete Patient"
-        message="Are you sure you want to delete this patient? This action cannot be undone."
-      />
-      <Notification
-        show={notification.show}
-        message={notification.message}
-      />
+      {showAddModal && (
+        <AddPatientModal
+          onClose={() => setShowAddModal(false)}
+          onSubmit={addPatient}
+        />
+      )}
+
+      {showDeleteModal && (
+        <DeleteConfirmationModal
+          show={showDeleteModal}
+          onClose={() => setShowDeleteModal(false)}
+          onConfirm={() => deletePatient(patientToDelete)}
+        />
+      )}
+
+      {/* Notification */}
+      {notification.show && (
+        <Notification
+          message={notification.message}
+          type={notification.type}
+        />
+      )}
+
+      {/* Statistics Section */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+        <AgeChart data={stats.ageGroups} />
+        <GenderChart data={stats.gender} />
+      </div>
     </motion.div>
   );
 };
 
+// Empty state component
 const EmptyState = () => (
-  <div className="text-center p-8 rounded-2xl bg-white/[0.05] backdrop-blur-sm border border-white/[0.05]">
-    <svg className="w-16 h-16 mx-auto text-white/20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" 
-            d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M12 12h.01M12 12h.01" />
-    </svg>
-    <p className="mt-4 text-white/70">No patients found</p>
-    <p className="text-sm text-white/50">Try adjusting your search or filters</p>
+  <div className="col-span-full flex flex-col items-center justify-center p-8 text-center">
+    <div className="w-16 h-16 mb-4 text-slate-400">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" 
+              d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+      </svg>
+    </div>
+    <h3 className="text-xl font-medium text-slate-300">No patients found</h3>
+    <p className="mt-2 text-slate-400">Try adjusting your search or filters</p>
   </div>
 );
 
