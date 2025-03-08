@@ -3,7 +3,6 @@ import { motion, AnimatePresence, useMotionValue, useTransform } from 'framer-mo
 import dashboardData from '../data/dashboardData';
 import { useTheme } from '../contexts/ThemeContext';
 import { IconButton } from '../components/ui/IconButton';
-import RecentActivity from '../components/RecentActivity';
 
 // Animation variants
 const containerVariants = {
@@ -236,18 +235,31 @@ const oceanGlow = {
 const Dashboard = () => {
   const { isDark, toggleTheme } = useTheme();
   const [stats, setStats] = useState([]);
+  const [patientTrend, setPatientTrend] = useState([]);
+  const [appointmentsByDept, setAppointmentsByDept] = useState([]);
   const [recentActivity, setRecentActivity] = useState([]);
   const [upcomingAppointments, setUpcomingAppointments] = useState([]);
+  const [timeRange, setTimeRange] = useState('week');
   const [healthMetrics, setHealthMetrics] = useState({});
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
 
   useEffect(() => {
     // Load mock data
-    setStats(dashboardData.stats);
-    setRecentActivity(dashboardData.recentActivity);
-    setUpcomingAppointments(dashboardData.upcomingAppointments);
-    setHealthMetrics(dashboardData.healthMetrics);
+    setStats(dashboardData.stats || []);
+    setRecentActivity(dashboardData.recentActivity || []);
+    setUpcomingAppointments(dashboardData.upcomingAppointments || []);
+    setHealthMetrics(dashboardData.healthMetrics || {});
+    
+    // Create patient trend data if needed
+    if (dashboardData.healthMetrics && dashboardData.healthMetrics.patientGrowth) {
+      setPatientTrend(dashboardData.healthMetrics.patientGrowth);
+    }
+    
+    // Set appointment distribution data if available
+    if (dashboardData.healthMetrics && dashboardData.healthMetrics.appointmentDistribution) {
+      setAppointmentsByDept(dashboardData.healthMetrics.appointmentDistribution);
+    }
   }, []);
 
   const handleMouseMove = (e) => {
