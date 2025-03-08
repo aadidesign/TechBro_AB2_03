@@ -7,22 +7,22 @@ import RecentActivity from '../components/RecentActivity';
 
 // Animation variants
 const containerVariants = {
-  initial: { opacity: 0 },
-  animate: {
+  hidden: { opacity: 0 },
+  visible: { 
     opacity: 1,
-    transition: {
+    transition: { 
       staggerChildren: 0.1,
       delayChildren: 0.2
     }
   }
 };
 
-const cardVariants = {
-  initial: { opacity: 0, y: 20 },
-  animate: { 
-    opacity: 1, 
-    y: 0,
-    transition: { duration: 0.4 }
+const itemVariants = {
+  hidden: { y: 20, opacity: 0 },
+  visible: { 
+    y: 0, 
+    opacity: 1,
+    transition: { type: 'spring', stiffness: 100 }
   }
 };
 
@@ -89,9 +89,15 @@ const slideInUp = {
 const neonGlow = {
   initial: { opacity: 0.3 },
   animate: {
-    opacity: [0.3, 0.5, 0.3],
+    opacity: [0.3, 0.6, 0.3],
+    scale: [1, 1.02, 1],
+    filter: [
+      'brightness(1) blur(4px)',
+      'brightness(1.2) blur(8px)',
+      'brightness(1) blur(4px)'
+    ],
     transition: {
-      duration: 3,
+      duration: 4,
       repeat: Infinity,
       ease: "easeInOut"
     }
@@ -290,11 +296,22 @@ const Dashboard = () => {
   };
 
   // Helper function to get icon for stat cards
-  const getStatIcon = (icon, color) => {
-    const bgColorClass = `bg-${color}-500/10`;
-    const textColorClass = `text-${color}-500`;
-
-    switch (icon) {
+  const getStatIcon = (iconName, color) => {
+    let bgColorClass = 'bg-emerald-500/20';
+    let textColorClass = 'text-emerald-400';
+    
+    if (color === 'blue') {
+      bgColorClass = 'bg-blue-500/20';
+      textColorClass = 'text-blue-400';
+    } else if (color === 'indigo') {
+      bgColorClass = 'bg-indigo-500/20';
+      textColorClass = 'text-indigo-400';
+    } else if (color === 'red') {
+      bgColorClass = 'bg-red-500/20';
+      textColorClass = 'text-red-400';
+    }
+    
+    switch (iconName) {
       case 'patients':
         return (
           <div className={`w-12 h-12 rounded-full ${bgColorClass} flex items-center justify-center`}>
@@ -339,37 +356,50 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="space-y-10 px-2">
+    <div className="p-6 max-w-7xl mx-auto">
       {/* Header Section */}
-      <div className="flex justify-between items-center mb-8">
-        <motion.div className="space-y-2">
-          <h1 className="text-4xl font-bold text-white">Dashboard</h1>
-          <p className="text-slate-400">Welcome back, Dr. Martin</p>
-        </motion.div>
-      </div>
+      <motion.div 
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        className="mb-8"
+      >
+        <motion.h1 
+          variants={itemVariants}
+          className="text-3xl font-bold text-white mb-2"
+        >
+          Dashboard
+        </motion.h1>
+        <motion.p 
+          variants={itemVariants}
+          className="text-white/60"
+        >
+          Welcome to your healthcare dashboard
+        </motion.p>
+      </motion.div>
 
-      {/* Stats Grid - Improved spacing */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+      {/* Stats Cards */}
+      <motion.div 
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8"
+      >
         {stats.map((stat) => (
-          <motion.div
+          <motion.div 
             key={stat.id}
-            variants={cardAnimation}
+            variants={itemVariants}
             whileHover={{ 
-              scale: 1.02,
-              transition: { type: "spring", stiffness: 300 }
+              scale: 1.02, 
+              boxShadow: "0 0 20px rgba(59, 130, 246, 0.2)",
+              borderColor: "rgba(255, 255, 255, 0.2)"
             }}
-            className="relative group backdrop-blur-xl bg-white/5 rounded-xl p-5 border border-white/10 shadow-lg overflow-hidden"
+            className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-6 transition-all hover:bg-white/10"
           >
-            {/* Card Glow */}
-            <motion.div
-              variants={oceanGlow}
-              className="absolute inset-0 bg-gradient-to-r from-emerald-500/10 via-blue-500/10 to-teal-500/10 rounded-xl blur-xl"
-            />
-            
-            <div className="relative z-10">
-              <div className="flex justify-between">
+            <div className="h-full">
+              <div className="flex justify-between items-start">
                 <div>
-                  <p className="text-emerald-100/70 text-sm mb-1">{stat.title}</p>
+                  <p className="text-white/60 text-sm mb-1">{stat.title}</p>
                   <h3 className="text-2xl font-bold text-white mb-3">{stat.value}</h3>
                   <motion.span 
                     whileHover={{ scale: 1.05 }}
@@ -382,28 +412,69 @@ const Dashboard = () => {
                     {stat.change}
                   </motion.span>
                 </div>
-                {getStatIcon(stat.icon, 'emerald')}
+                {getStatIcon(stat.icon, stat.color)}
               </div>
             </div>
           </motion.div>
         ))}
-      </div>
+      </motion.div>
 
       {/* Activity and Appointments Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
-        <div className="">
-          <RecentActivity />
-        </div>
+        <motion.div 
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+          className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-6 transition-all hover:bg-white/10"
+        >
+          <h2 className="text-xl font-semibold text-white mb-6">Recent Activity</h2>
+          <div className="space-y-4">
+            {recentActivity.map((activity) => (
+              <motion.div 
+                key={activity.id}
+                variants={itemVariants}
+                whileHover={{ 
+                  scale: 1.02, 
+                  boxShadow: "0 0 10px rgba(59, 130, 246, 0.1)",
+                  borderColor: "rgba(255, 255, 255, 0.2)"
+                }}
+                className="flex items-start p-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors"
+              >
+                <div className="w-10 h-10 rounded-full flex items-center justify-center mr-3 bg-blue-500/20 text-blue-300">
+                  <span className="text-lg">
+                    {activity.type === 'appointment' ? '📅' :
+                     activity.type === 'record' ? '📋' :
+                     activity.type === 'test' ? '🔬' : '📌'}
+                  </span>
+                </div>
+                <div>
+                  <p className="text-white font-medium">{activity.message}</p>
+                  <p className="text-white/60 text-sm">{activity.time}</p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
 
         {/* Upcoming Appointments */}
-        <motion.div className="space-y-6">
+        <motion.div 
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+          className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-6 transition-all hover:bg-white/10"
+        >
           <h2 className="text-xl font-semibold text-white mb-6">Upcoming Appointments</h2>
           <div className="space-y-3">
             {upcomingAppointments.map((appointment) => (
               <motion.div 
                 key={appointment.id}
-                whileHover={{ scale: 1.02 }}
-                className="backdrop-blur-md bg-white/5 rounded-lg p-3 border border-white/5 hover:bg-white/10 transition-colors mb-3"
+                variants={itemVariants}
+                whileHover={{ 
+                  scale: 1.02, 
+                  boxShadow: "0 0 20px rgba(59, 130, 246, 0.2)",
+                  borderColor: "rgba(255, 255, 255, 0.2)"
+                }}
+                className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-4 transition-all hover:bg-white/10"
               >
                 <div className="flex justify-between items-start mb-2">
                   <h4 className="font-medium text-white">{appointment.patientName}</h4>
@@ -421,8 +492,12 @@ const Dashboard = () => {
             ))}
             
             <motion.button 
-              whileHover={{ scale: 1.02 }}
-              className="w-full mt-3 py-2 backdrop-blur-md bg-white/5 border border-white/10 text-white/80 rounded-lg hover:bg-white/10 hover:text-white transition-colors"
+              whileHover={{ 
+                scale: 1.02, 
+                boxShadow: "0 0 20px rgba(59, 130, 246, 0.2)",
+                borderColor: "rgba(255, 255, 255, 0.2)"
+              }}
+              className="w-full mt-3 py-2 bg-white/5 backdrop-blur-md border border-white/10 rounded-xl text-white/80 hover:bg-white/10 hover:text-white transition-all"
             >
               View All Appointments
             </motion.button>
@@ -433,44 +508,38 @@ const Dashboard = () => {
       {/* Charts Section - Improved spacing */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
         {/* Patient Growth Chart */}
-        <motion.div className="p-6 rounded-2xl bg-white/5 backdrop-blur-sm">
+        <motion.div 
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+          whileHover={{ 
+            scale: 1.02, 
+            boxShadow: "0 0 20px rgba(59, 130, 246, 0.2)",
+            borderColor: "rgba(255, 255, 255, 0.2)"
+          }}
+          className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-6 transition-all hover:bg-white/10"
+        >
           <h2 className="text-xl font-semibold text-white mb-6">Patient Growth</h2>
-          <div className="h-64 flex items-end justify-between px-2">
-            {healthMetrics.patientGrowth && healthMetrics.patientGrowth.map((value, index) => {
+          <div className="h-64 flex items-end justify-between">
+            {healthMetrics.patientGrowth && healthMetrics.patientGrowth.map((count, index) => {
+              const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+              const month = months[index % 12];
               const maxValue = Math.max(...healthMetrics.patientGrowth);
-              const height = (value / maxValue) * 100;
-              return (
-                <motion.div 
-                  key={index} 
-                  className="relative group"
-                  whileHover={{ scale: 1.1 }}
-                >
-                  <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-black/70 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">
-                    {value}
-                  </div>
-                  <motion.div 
-                    initial={{ height: 0 }}
-                    animate={{ height: `${height}%` }}
-                    transition={{ duration: 0.5, delay: index * 0.1 }}
-                    className="w-6 bg-gradient-to-t from-[#1E88E5] to-[#00BFA5] rounded-t-sm"
-                  />
-                  <div className="text-white/50 text-xs mt-2">
-                    {['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][index]}
-                  </div>
-                </motion.div>
-              );
-            })}
-          </div>
-        </motion.div>
-
-        {/* Age Distribution Chart */}
-        <motion.div className="p-6 rounded-2xl bg-white/5 backdrop-blur-sm">
-          <h2 className="text-xl font-semibold text-white mb-6">Age Distribution</h2>
-          <div className="flex h-48 items-end justify-around">
-            {healthMetrics.ageDistribution && Object.entries(healthMetrics.ageDistribution).map(([group, count], index) => {
-              const colors = ['from-blue-500 to-blue-700', 'from-green-500 to-green-700', 'from-yellow-500 to-yellow-700', 'from-red-500 to-red-700'];
-              const maxValue = Math.max(...Object.values(healthMetrics.ageDistribution));
               const height = (count / maxValue) * 100;
+              const colors = [
+                'from-blue-500 to-blue-400',
+                'from-indigo-500 to-indigo-400',
+                'from-purple-500 to-purple-400',
+                'from-pink-500 to-pink-400',
+                'from-red-500 to-red-400',
+                'from-orange-500 to-orange-400',
+                'from-amber-500 to-amber-400',
+                'from-yellow-500 to-yellow-400',
+                'from-lime-500 to-lime-400',
+                'from-green-500 to-green-400',
+                'from-emerald-500 to-emerald-400',
+                'from-teal-500 to-teal-400',
+              ];
               
               return (
                 <div key={index} className="flex flex-col items-center group">
@@ -483,7 +552,50 @@ const Dashboard = () => {
                       style={{ height: `${height}%` }}
                     ></div>
                   </div>
+                  <div className="text-xs mt-1 text-white/80">{month}</div>
+                </div>
+              );
+            })}
+          </div>
+        </motion.div>
+        
+        {/* Age Distribution Chart */}
+        <motion.div 
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+          whileHover={{ 
+            scale: 1.02, 
+            boxShadow: "0 0 20px rgba(59, 130, 246, 0.2)",
+            borderColor: "rgba(255, 255, 255, 0.2)"
+          }}
+          className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-6 transition-all hover:bg-white/10"
+        >
+          <h2 className="text-xl font-semibold text-white mb-6">Age Distribution</h2>
+          <div className="h-64 flex items-end justify-around">
+            {healthMetrics.ageDistribution && Object.entries(healthMetrics.ageDistribution).map(([group, count], index) => {
+              const maxValue = Math.max(...Object.values(healthMetrics.ageDistribution));
+              const height = (count / maxValue) * 100;
+              const colors = [
+                'from-blue-400 to-cyan-400',
+                'from-green-400 to-teal-400',
+                'from-yellow-400 to-orange-400',
+                'from-red-400 to-pink-400'
+              ];
+              
+              return (
+                <div key={group} className="flex flex-col items-center group">
+                  <div className="relative mb-1">
+                    <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-black/70 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">
+                      {count} patients
+                    </div>
+                    <div 
+                      className={`w-12 rounded-t-lg bg-gradient-to-b ${colors[index % colors.length]} shadow-lg hover:w-14 transition-all duration-200`} 
+                      style={{ height: `${height}%` }}
+                    ></div>
+                  </div>
                   <div className="text-xs mt-1 text-white/80">{group}</div>
+                  <div className="text-xs text-blue-400/80 font-medium">{count}</div>
                 </div>
               );
             })}
