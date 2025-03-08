@@ -8,10 +8,12 @@ import Doctors from './pages/Doctors';
 import MedicalRecords from './pages/MedicalRecords';
 import Reports from './pages/Reports';
 import { ThemeProvider } from './contexts/ThemeContext';
+import { Toaster } from 'react-hot-toast';
 
 const App = () => {
   return (
     <ThemeProvider>
+      <Toaster position="top-right" />
       <Router>
         <Routes>
           <Route path="/" element={<Layout />}>

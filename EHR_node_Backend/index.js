@@ -32,7 +32,7 @@ const dashboardRoutes = require("./routes/dashboardRoutes");
 
 // Models
 const Patient = require("./models/patient.model");
-const Appointment = require("./models/appointment.model");
+const Appointment = require("./models/appointment");
 const MedicalStaff = require("./models/medicalStaff.model");
 
 // Middleware
@@ -48,8 +48,13 @@ mongoose.connect(MONGODB_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true
 })
-.then(() => console.log("Connected to MongoDB"))
-.catch(err => console.error("MongoDB connection error:", err));
+.then(() => {
+  console.log("Connected to MongoDB");
+})
+.catch(err => {
+  console.error("MongoDB connection error:", err);
+  process.exit(1);  // Exit if cannot connect to database
+});
 
 // Set up EJS view engine
 app.set("view engine", "ejs");

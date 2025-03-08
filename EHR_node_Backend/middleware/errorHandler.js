@@ -1,22 +1,25 @@
 // Error handling middleware
-module.exports = function(err, req, res, next) {
+const errorHandler = (err, req, res, next) => {
     console.error(err.stack);
     
-    // Set status code
-    const statusCode = err.statusCode || 500;
-    
-    // Render error page or send JSON for API requests
-    if (req.xhr || req.headers.accept.indexOf('json') > -1) {
-      return res.status(statusCode).json({
-        error: true,
-        message: err.message || 'Something went wrong'
+    if (err.name === 'ValidationError') {
+      return res.status(400).json({
+        error: 'Validation Error',
+        details: Object.values(err.errors).map(error => error.message)
       });
     }
     
-    // Render error page for normal requests
-    res.status(statusCode).render('error', {
-      title: `Error ${statusCode}`,
-      message: err.message || 'Something went wrong',
-      error: process.env.NODE_ENV === 'development' ? err : {}
+    if (err.name === 'MongoError' && err.code === 11000) {
+      return res.status(409).json({
+        error: 'Duplicate Error',
+        details: 'This record already exists'
+      });
+    }
+    
+    res.status(500).json({
+      error: 'Internal Server Error',
+      details: process.env.NODE_ENV === 'development' ? err.message : 'Something went wrong'
     });
   };
+
+module.exports = errorHandler;

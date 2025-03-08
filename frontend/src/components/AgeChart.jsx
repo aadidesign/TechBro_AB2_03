@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 const AgeChart = ({ data }) => {
-  // Add default value and validation
+  // Add default values and validation
   const ageGroups = data || {
     '0-18': 0,
     '19-35': 0,

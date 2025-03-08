@@ -1,7 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import appointmentsData, { statusOptions, appointmentTypes, doctors } from '../data/appointmentsData';
+import { appointmentService } from '../services/appointmentService';
 import ScheduleAppointmentModal from '../components/ScheduleAppointmentModal';
+import { toast } from 'react-hot-toast';
+
+// Add these constants at the top of the file
+export const statusOptions = [
+  { value: "confirmed", label: "Confirmed", color: "green" },
+  { value: "pending", label: "Pending", color: "yellow" },
+  { value: "canceled", label: "Canceled", color: "red" },
+  { value: "completed", label: "Completed", color: "blue" }
+];
+
+export const appointmentTypes = [
+  { value: "consultation", label: "Consultation", description: "Initial assessment" },
+  { value: "followup", label: "Follow-up", description: "Review progress" },
+  { value: "checkup", label: "Check-up", description: "Regular health check" },
+  { value: "labresults", label: "Lab Results", description: "Review test results" },
+  { value: "vaccination", label: "Vaccination", description: "Scheduled immunization" },
+  { value: "surgery", label: "Surgery", description: "Surgical consultation" },
+  { value: "emergency", label: "Emergency", description: "Urgent care" },
+  { value: "therapy", label: "Therapy", description: "Ongoing treatment" }
+];
 
 // Animation variants
 const containerVariants = {
@@ -24,6 +44,12 @@ const itemVariants = {
   }
 };
 
+// Helper function to get status color
+const getStatusColor = (status) => {
+  const statusOption = statusOptions.find(option => option.value === status.toLowerCase());
+  return statusOption ? statusOption.color : 'gray';
+};
+
 const Appointments = () => {
   const [appointments, setAppointments] = useState([]);
   const [filteredAppointments, setFilteredAppointments] = useState({});
@@ -35,39 +61,40 @@ const Appointments = () => {
   const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [appointmentToEdit, setAppointmentToEdit] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // Fetch appointments
+  const fetchAppointments = async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      const filters = {};
+      if (statusFilter !== 'all') filters.status = statusFilter;
+      if (dateFilter !== 'all') filters.date = dateFilter;
+      if (searchTerm) filters.search = searchTerm;
+
+      const data = await appointmentService.getAllAppointments(filters);
+      setAppointments(data);
+    } catch (err) {
+      setError('Failed to fetch appointments');
+      toast.error('Failed to fetch appointments');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   // Load appointments data
   useEffect(() => {
-    setAppointments(appointmentsData);
-  }, []);
+    fetchAppointments();
+  }, [statusFilter, dateFilter, searchTerm]);
 
   // Filter and group appointments by date
   useEffect(() => {
     if (!appointments.length) return;
-
-    let filtered = [...appointments];
-    
-    // Apply search filter
-    if (searchTerm) {
-      filtered = filtered.filter(appointment => 
-        appointment.patientName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        appointment.doctor.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        appointment.type.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
-    
-    // Apply date filter
-    if (dateFilter !== 'all') {
-      filtered = filtered.filter(appointment => appointment.date === dateFilter);
-    }
-    
-    // Apply status filter
-    if (statusFilter !== 'all') {
-      filtered = filtered.filter(appointment => appointment.status === statusFilter);
-    }
     
     // Group by date
-    const grouped = filtered.reduce((acc, appointment) => {
+    const grouped = appointments.reduce((acc, appointment) => {
       if (!acc[appointment.date]) {
         acc[appointment.date] = [];
       }
@@ -84,48 +111,38 @@ const Appointments = () => {
       }, {});
     
     setFilteredAppointments(sortedGrouped);
-  }, [appointments, searchTerm, dateFilter, statusFilter]);
+  }, [appointments]);
 
-  // Helper function to get status color
-  const getStatusColor = (status) => {
-    switch (status.toLowerCase()) {
-      case 'confirmed':
-        return 'green';
-      case 'pending':
-        return 'yellow';
-      case 'canceled':
-        return 'red';
-      case 'completed':
-        return 'blue';
-      default:
-        return 'gray';
+  // Handle schedule new appointment
+  const handleScheduleAppointment = async (appointmentData) => {
+    try {
+      const newAppointment = await appointmentService.createAppointment(appointmentData);
+      setAppointments(prev => [...prev, newAppointment]);
+      setIsScheduleModalOpen(false);
+      toast.success('Appointment scheduled successfully');
+    } catch (error) {
+      toast.error('Failed to schedule appointment');
     }
   };
 
-  // Handle schedule new appointment
-  const handleScheduleAppointment = (appointmentData) => {
-    const newAppointment = {
-      id: appointments.length + 1,
-      ...appointmentData,
-      status: 'confirmed'
-    };
-    
-    setAppointments([...appointments, newAppointment]);
-    setIsScheduleModalOpen(false);
-  };
-
   // Handle cancel appointment
-  const handleCancelAppointment = () => {
+  const handleCancelAppointment = async () => {
     if (!selectedAppointment) return;
     
-    const updatedAppointments = appointments.map(appointment => 
-      appointment.id === selectedAppointment.id 
-        ? { ...appointment, status: 'canceled' } 
-        : appointment
-    );
-    
-    setAppointments(updatedAppointments);
-    setSelectedAppointment({ ...selectedAppointment, status: 'canceled' });
+    try {
+      await appointmentService.cancelAppointment(selectedAppointment.id);
+      setAppointments(prev => 
+        prev.map(appointment => 
+          appointment.id === selectedAppointment.id 
+            ? { ...appointment, status: 'canceled' } 
+            : appointment
+        )
+      );
+      setSelectedAppointment({ ...selectedAppointment, status: 'canceled' });
+      toast.success('Appointment cancelled successfully');
+    } catch (error) {
+      toast.error('Failed to cancel appointment');
+    }
   };
 
   // Handle edit appointment
@@ -136,16 +153,42 @@ const Appointments = () => {
   };
 
   // Handle update appointment
-  const handleUpdateAppointment = (updatedData) => {
-    const updatedAppointments = appointments.map(appointment => 
-      appointment.id === updatedData.id 
-        ? { ...updatedData } 
-        : appointment
-    );
-    
-    setAppointments(updatedAppointments);
-    setIsEditModalOpen(false);
+  const handleUpdateAppointment = async (updatedData) => {
+    try {
+      const updated = await appointmentService.updateAppointment(updatedData.id, updatedData);
+      setAppointments(prev => 
+        prev.map(appointment => 
+          appointment.id === updatedData.id ? updated : appointment
+        )
+      );
+      setIsEditModalOpen(false);
+      toast.success('Appointment updated successfully');
+    } catch (error) {
+      toast.error('Failed to update appointment');
+    }
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center h-screen">
+        <p className="text-red-500 text-xl mb-4">{error}</p>
+        <button 
+          onClick={fetchAppointments}
+          className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+        >
+          Retry
+        </button>
+      </div>
+    );
+  }
 
   return (
     <motion.div 
