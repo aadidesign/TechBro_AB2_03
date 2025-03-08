@@ -1,24 +1,5 @@
 [
   {
-    "id": "P1004",
-    "name": "Sophia Davis",
-    "age": "28",
-    "gender": "Female",
-    "blood_type": "AB+",
-    "diagnoses": [
-      "Thyroid Disorder"
-    ],
-    "medications": [
-      "Levothyroxine"
-    ],
-    "allergies": [
-      "Penicillin"
-    ],
-    "last_visit": "2025-01-05",
-    "condition": "Stable",
-    "aiSupportResponse": ""
-  },
-  {
     "id": "P1005",
     "name": "Liam Wilson",
     "age": "35",

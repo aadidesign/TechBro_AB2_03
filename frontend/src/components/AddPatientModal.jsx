@@ -7,7 +7,9 @@ const AddPatientModal = ({ onClose, onSubmit }) => {
     name: '',
     age: '',
     gender: '',
-    contact: ''
+    contact: '',
+    symptoms: '',
+    description: ''
   });
   
   const [errors, setErrors] = useState({});
@@ -53,7 +55,12 @@ const AddPatientModal = ({ onClose, onSubmit }) => {
     e.preventDefault();
     
     if (validateForm()) {
-      onSubmit(formData);
+      // Convert symptoms string to array
+      const processedData = {
+        ...formData,
+        symptoms: formData.symptoms ? formData.symptoms.split(',').map(s => s.trim()) : []
+      };
+      onSubmit(processedData);
     }
   };
 
@@ -73,7 +80,7 @@ const AddPatientModal = ({ onClose, onSubmit }) => {
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.95 }}
-        className="relative bg-[#1a1a1a] border border-white/10 rounded-2xl p-6 max-w-md w-full shadow-xl"
+        className="relative bg-[#1a1a1a] border border-white/10 rounded-2xl p-6 max-w-md w-full shadow-xl overflow-y-auto max-h-[90vh]"
       >
         {/* Close Button */}
         <button
@@ -150,6 +157,35 @@ const AddPatientModal = ({ onClose, onSubmit }) => {
                        text-white placeholder-white/30 focus:border-blue-500/50 focus:ring-2 
                        focus:ring-blue-500/20 transition-all"
               placeholder="Enter contact information"
+            />
+          </div>
+
+          <div>
+            <label className="block text-white/70 mb-2 text-sm">Symptoms</label>
+            <input
+              type="text"
+              name="symptoms"
+              value={formData.symptoms}
+              onChange={handleChange}
+              className="w-full px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 
+                       text-white placeholder-white/30 focus:border-blue-500/50 focus:ring-2 
+                       focus:ring-blue-500/20 transition-all"
+              placeholder="Enter symptoms (comma separated)"
+            />
+            <p className="text-white/50 text-xs mt-1">Separate multiple symptoms with commas</p>
+          </div>
+
+          <div>
+            <label className="block text-white/70 mb-2 text-sm">Description</label>
+            <textarea
+              name="description"
+              value={formData.description}
+              onChange={handleChange}
+              rows="3"
+              className="w-full px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 
+                       text-white placeholder-white/30 focus:border-blue-500/50 focus:ring-2 
+                       focus:ring-blue-500/20 transition-all"
+              placeholder="Enter detailed description of patient's condition"
             />
           </div>
 

@@ -8,7 +8,9 @@ const PatientCard = ({ patient, onDelete }) => {
     name = 'Unknown',
     age = 0,
     gender = 'unknown',
-    contact = 'N/A'
+    contact = 'N/A',
+    symptoms = [],
+    description = ''
   } = patient || {};
 
   // Safely format gender display
@@ -57,6 +59,31 @@ const PatientCard = ({ patient, onDelete }) => {
           </svg>
           <span><strong>ID:</strong> #{id}</span>
         </p>
+        
+        {/* Display symptoms if available */}
+        {symptoms && symptoms.length > 0 && (
+          <div className="mt-3">
+            <p className="font-medium text-white/80 mb-1">Symptoms:</p>
+            <div className="flex flex-wrap gap-1">
+              {symptoms.map((symptom, index) => (
+                <span 
+                  key={index} 
+                  className="px-2 py-0.5 bg-yellow-500/20 text-yellow-300 rounded-full text-xs"
+                >
+                  {symptom}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+        
+        {/* Display description if available */}
+        {description && (
+          <div className="mt-3">
+            <p className="font-medium text-white/80 mb-1">Description:</p>
+            <p className="text-white/60 text-xs italic">{description}</p>
+          </div>
+        )}
       </div>
       
       <div className="flex space-x-2">
@@ -89,7 +116,9 @@ PatientCard.propTypes = {
     name: PropTypes.string.isRequired,
     age: PropTypes.number.isRequired,
     gender: PropTypes.string.isRequired,
-    contact: PropTypes.string.isRequired
+    contact: PropTypes.string.isRequired,
+    symptoms: PropTypes.arrayOf(PropTypes.string),
+    description: PropTypes.string
   }).isRequired,
   onDelete: PropTypes.func.isRequired
 };

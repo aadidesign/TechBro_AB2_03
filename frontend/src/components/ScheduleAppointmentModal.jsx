@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import PropTypes from 'prop-types';
-import { appointmentTypes, doctors } from '../data/appointmentsData';
+import { appointmentTypes } from '../data/appointmentsData';
 import { appointmentService } from '../services/appointmentService';
 import { toast } from 'react-hot-toast';
+import axios from 'axios';
+import { doctors as staticDoctors } from '../data/appointmentsData';
+import { timeSlots } from '../data/appointmentsData';
 
 const ScheduleAppointmentModal = ({ show, onClose, onSave, initialData = null, isEditing = false }) => {
   const [formData, setFormData] = useState(initialData || {
@@ -14,11 +17,13 @@ const ScheduleAppointmentModal = ({ show, onClose, onSave, initialData = null, i
     duration: '30',
     type: '',
     doctor: '',
-    notes: ''
+    notes: '',
+    status: 'pending'
   });
   const [availableTimeSlots, setAvailableTimeSlots] = useState([]);
   const [isLoadingSlots, setIsLoadingSlots] = useState(false);
   const [error, setError] = useState(null);
+  const [doctors, setDoctors] = useState([]);
 
   useEffect(() => {
     const fetchTimeSlots = async () => {
@@ -34,7 +39,7 @@ const ScheduleAppointmentModal = ({ show, onClose, onSave, initialData = null, i
         } catch (error) {
           console.error('Failed to fetch time slots:', error);
           setError('Failed to load available time slots');
-          toast.error('Failed to load available time slots');
+          setAvailableTimeSlots(timeSlots);
         } finally {
           setIsLoadingSlots(false);
         }
@@ -43,6 +48,20 @@ const ScheduleAppointmentModal = ({ show, onClose, onSave, initialData = null, i
 
     fetchTimeSlots();
   }, [formData.date, formData.doctor]);
+
+  useEffect(() => {
+    const fetchDoctors = async () => {
+      try {
+        const response = await axios.get('http://localhost:3000/api/doctors');
+        setDoctors(response.data);
+      } catch (error) {
+        console.error('Failed to fetch doctors:', error);
+        setDoctors(staticDoctors);
+      }
+    };
+
+    fetchDoctors();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -64,11 +83,22 @@ const ScheduleAppointmentModal = ({ show, onClose, onSave, initialData = null, i
         return;
       }
 
-      await onSave(formData);
+      // Format the data for the API
+      const appointmentData = {
+        ...formData,
+        status: formData.status || 'pending',
+        duration: Number(formData.duration), // Ensure duration is a number
+        // If patientId is empty, use a placeholder ObjectId
+        patientId: formData.patientId || '000000000000000000000000'
+      };
+
+      console.log('Submitting appointment data:', appointmentData);
+      await onSave(appointmentData);
       onClose();
       toast.success(isEditing ? 'Appointment updated successfully' : 'Appointment scheduled successfully');
     } catch (error) {
-      toast.error(error.response?.data?.error || 'Failed to schedule appointment');
+      console.error('Error submitting appointment:', error);
+      toast.error(error.response?.data?.error || 'Failed to process appointment');
     }
   };
 
@@ -248,8 +278,8 @@ const ScheduleAppointmentModal = ({ show, onClose, onSave, initialData = null, i
                   >
                     <option value="">Select doctor</option>
                     {doctors.map(doctor => (
-                      <option key={doctor.id} value={doctor.id}>
-                        {doctor.name}
+                      <option key={doctor._id} value={doctor._id}>
+                        {doctor.name} - {doctor.specialty}
                       </option>
                     ))}
                   </select>

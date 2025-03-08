@@ -75,10 +75,18 @@ const Appointments = () => {
       if (searchTerm) filters.search = searchTerm;
 
       const data = await appointmentService.getAllAppointments(filters);
-      setAppointments(data);
+      if (Array.isArray(data)) {
+        setAppointments(data);
+      } else {
+        // If data is not an array, set empty array
+        setAppointments([]);
+        console.warn('Received non-array data from API:', data);
+      }
     } catch (err) {
-      setError('Failed to fetch appointments');
+      console.error('Error in fetchAppointments:', err);
+      setError('Failed to fetch appointments. Please ensure the backend server is running.');
       toast.error('Failed to fetch appointments');
+      setAppointments([]); // Set empty array on error
     } finally {
       setIsLoading(false);
     }
@@ -116,12 +124,27 @@ const Appointments = () => {
   // Handle schedule new appointment
   const handleScheduleAppointment = async (appointmentData) => {
     try {
-      const newAppointment = await appointmentService.createAppointment(appointmentData);
+      console.log('Scheduling appointment with data:', appointmentData);
+      
+      // Ensure the data is properly formatted
+      const formattedData = {
+        ...appointmentData,
+        duration: Number(appointmentData.duration),
+        // If patientId is not provided or is empty, use a placeholder
+        patientId: appointmentData.patientId || '000000000000000000000000'
+      };
+      
+      const newAppointment = await appointmentService.createAppointment(formattedData);
+      console.log('New appointment created:', newAppointment);
+      
+      // Add the new appointment to the state
       setAppointments(prev => [...prev, newAppointment]);
       setIsScheduleModalOpen(false);
       toast.success('Appointment scheduled successfully');
     } catch (error) {
-      toast.error('Failed to schedule appointment');
+      console.error('Error scheduling appointment:', error);
+      const errorMessage = error.response?.data?.error || error.response?.data?.details || 'Failed to schedule appointment';
+      toast.error(errorMessage);
     }
   };
 
@@ -130,18 +153,13 @@ const Appointments = () => {
     if (!selectedAppointment) return;
     
     try {
-      await appointmentService.cancelAppointment(selectedAppointment.id);
-      setAppointments(prev => 
-        prev.map(appointment => 
-          appointment.id === selectedAppointment.id 
-            ? { ...appointment, status: 'canceled' } 
-            : appointment
-        )
-      );
-      setSelectedAppointment({ ...selectedAppointment, status: 'canceled' });
+      await appointmentService.cancelAppointment(selectedAppointment._id);
+      fetchAppointments(); // Refresh the appointments list
+      setIsDetailsModalOpen(false);
       toast.success('Appointment cancelled successfully');
     } catch (error) {
-      toast.error('Failed to cancel appointment');
+      console.error('Error cancelling appointment:', error);
+      toast.error(error.response?.data?.error || 'Failed to cancel appointment');
     }
   };
 
@@ -155,16 +173,13 @@ const Appointments = () => {
   // Handle update appointment
   const handleUpdateAppointment = async (updatedData) => {
     try {
-      const updated = await appointmentService.updateAppointment(updatedData.id, updatedData);
-      setAppointments(prev => 
-        prev.map(appointment => 
-          appointment.id === updatedData.id ? updated : appointment
-        )
-      );
+      await appointmentService.updateAppointment(updatedData._id, updatedData);
+      fetchAppointments(); // Refresh the appointments list
       setIsEditModalOpen(false);
       toast.success('Appointment updated successfully');
     } catch (error) {
-      toast.error('Failed to update appointment');
+      console.error('Error updating appointment:', error);
+      toast.error(error.response?.data?.error || 'Failed to update appointment');
     }
   };
 
@@ -300,7 +315,7 @@ const Appointments = () => {
               <div className="space-y-3">
                 {appointments.map(appointment => (
                   <motion.div
-                    key={appointment.id}
+                    key={appointment._id}
                     whileHover={{ scale: 1.01 }}
                     className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-4 hover:bg-white/10 transition-all cursor-pointer"
                     onClick={() => {

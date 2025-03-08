@@ -11,15 +11,17 @@
   "dependencies": {
     "@google/generative-ai": "^0.22.0",
     "@pinecone-database/pinecone": "^5.1.0",
+    "bcryptjs": "^3.0.2",
     "connect-flash": "^0.1.1",
     "cors": "^2.8.5",
+    "date-fns": "^2.30.0",
     "dotenv": "^16.0.3",
     "ejs": "^3.1.10",
     "express": "^4.17.1",
+    "jsonwebtoken": "^9.0.2",
     "mongoose": "^7.6.3",
     "multer": "^1.4.5-lts.1",
     "pdfkit": "^0.16.0",
-    "date-fns": "^2.30.0",
     "uuid": "^9.0.0"
   },
   "devDependencies": {

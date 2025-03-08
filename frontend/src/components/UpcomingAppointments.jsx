@@ -13,7 +13,7 @@ const UpcomingAppointments = () => {
         <div className="space-y-4 max-h-[calc(100vh-24rem)] overflow-y-auto pr-2 
                         scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
           {upcomingAppointments.map((appointment) => (
-            <AppointmentItem key={appointment.id} appointment={appointment} />
+            <AppointmentItem key={appointment._id} appointment={appointment} />
           ))}
           <motion.button
             whileHover={{ scale: 1.01 }}

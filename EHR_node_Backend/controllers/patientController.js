@@ -103,7 +103,7 @@ exports.getPatientById = async (req, res) => {
 exports.addPatient = async (req, res) => {
   try {
     const patients = getPatients();
-    const { name, age, gender, contact, address, medicalHistory } = req.body;
+    const { name, age, gender, contact, address, symptoms, description, medicalHistory } = req.body;
 
     // Validate required fields
     if (!name || !age || !gender) {
@@ -122,6 +122,8 @@ exports.addPatient = async (req, res) => {
       gender: gender.toLowerCase(),
       contact: contact || '',
       address: address || '',
+      symptoms: symptoms || [],
+      description: description || '',
       medicalHistory: medicalHistory || [],
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()

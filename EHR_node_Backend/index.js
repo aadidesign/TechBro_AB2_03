@@ -133,6 +133,11 @@ app.get("/AI", (req, res) => {
   res.render("AI");
 });
 
+// Health check endpoint
+app.get('/api/health', (req, res) => {
+  res.status(200).json({ status: 'ok' });
+});
+
 // 404 handler
 app.use((req, res, next) => {
   const err = new Error("Page Not Found");

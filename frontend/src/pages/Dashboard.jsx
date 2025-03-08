@@ -448,7 +448,7 @@ const Dashboard = () => {
           <div className="space-y-3">
             {upcomingAppointments && upcomingAppointments.map((appointment) => (
               <motion.div 
-                key={appointment.id}
+                key={appointment._id}
                 whileHover={{ scale: 1.02 }}
                 className="backdrop-blur-md bg-white/5 rounded-lg p-3 border border-white/5 hover:bg-white/10 transition-colors mb-3"
               >
