@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import doctorsData, { specialties, statusOptions } from '../data/doctorsData';
+import AddDoctorModal from '../components/AddDoctorModal';
+import ScheduleAppointmentModal from '../components/ScheduleAppointmentModal';
 
 const Doctors = () => {
   const [doctors, setDoctors] = useState([]);
@@ -10,6 +12,9 @@ const Doctors = () => {
   const [selectedDoctor, setSelectedDoctor] = useState(null);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'list'
+  const [isAddDoctorModalOpen, setIsAddDoctorModalOpen] = useState(false);
+  const [isEditProfileModalOpen, setIsEditProfileModalOpen] = useState(false);
+  const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false);
 
   // Load doctors data
   useEffect(() => {
@@ -53,6 +58,54 @@ const Doctors = () => {
   const viewDoctorProfile = (doctor) => {
     setSelectedDoctor(doctor);
     setIsProfileModalOpen(true);
+  };
+
+  // Handle adding a new doctor
+  const handleAddDoctor = (newDoctor) => {
+    // Generate a new ID for the doctor
+    const newId = Math.max(...doctors.map(d => d.id)) + 1;
+    const doctorWithId = {
+      ...newDoctor,
+      id: newId,
+      rating: 0,
+      patients: 0,
+      status: 'active'
+    };
+    
+    setDoctors([...doctors, doctorWithId]);
+    setIsAddDoctorModalOpen(false);
+  };
+
+  // Handle editing a doctor's profile
+  const handleEditProfile = () => {
+    setIsProfileModalOpen(false);
+    setIsEditProfileModalOpen(true);
+  };
+
+  // Handle updating a doctor's profile
+  const handleUpdateDoctor = (updatedDoctor) => {
+    const updatedDoctors = doctors.map(doctor => 
+      doctor.id === updatedDoctor.id ? { ...doctor, ...updatedDoctor } : doctor
+    );
+    
+    setDoctors(updatedDoctors);
+    setSelectedDoctor({ ...selectedDoctor, ...updatedDoctor });
+    setIsEditProfileModalOpen(false);
+    setIsProfileModalOpen(true);
+  };
+
+  // Handle scheduling an appointment with the doctor
+  const handleScheduleAppointment = () => {
+    setIsProfileModalOpen(false);
+    setIsScheduleModalOpen(true);
+  };
+
+  // Handle saving a new appointment
+  const handleSaveAppointment = (appointmentData) => {
+    // Here you would typically save the appointment to your appointments data
+    // For now, we'll just close the modal
+    setIsScheduleModalOpen(false);
+    setIsProfileModalOpen(true); // Return to the doctor profile
   };
 
   // Format availability for display
@@ -101,11 +154,13 @@ const Doctors = () => {
           </div>
           
           <button 
-            type="button" 
-            className="group inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-600 to-teal-500 border border-transparent rounded-xl shadow-lg text-sm font-medium text-white hover:from-blue-700 hover:to-teal-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all hover:scale-105 active:scale-95"
+            onClick={() => setIsAddDoctorModalOpen(true)}
+            className="px-4 py-2 bg-gradient-to-r from-blue-600 to-teal-500 text-white rounded-lg 
+                     flex items-center gap-2 shadow-lg shadow-blue-500/20 hover:shadow-blue-500/30 
+                     hover:from-blue-700 hover:to-teal-600 transition-all"
           >
-            <svg className="w-5 h-5 mr-2 group-hover:animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
             </svg>
             Add Doctor
           </button>
@@ -285,72 +340,78 @@ const Doctors = () => {
 
       {/* Doctor Profile Modal */}
       {isProfileModalOpen && selectedDoctor && (
-        <div className="fixed inset-0 flex items-center justify-center z-50">
-          <div className="bg-black/30 backdrop-blur-md p-6 rounded-xl shadow-lg w-full max-w-3xl relative z-10 border border-white/10">
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-xl font-semibold text-white">Doctor Profile</h2>
-              <button 
-                className="text-white/70 hover:text-white text-2xl leading-none transition-colors" 
-                onClick={() => setIsProfileModalOpen(false)}
-              >
-                &times;
-              </button>
-            </div>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setIsProfileModalOpen(false)}></div>
+          <div className="relative bg-[#1a1a1a] border border-white/10 rounded-2xl p-6 max-w-4xl w-full shadow-xl">
+            <button 
+              onClick={() => setIsProfileModalOpen(false)} 
+              className="absolute top-4 right-4 text-white/50 hover:text-white transition-colors"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
             
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-              <div className="md:col-span-1">
-                <div className="flex flex-col items-center">
-                  <div className="w-32 h-32 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center text-white text-3xl font-semibold mb-4">
-                    {selectedDoctor.name.split(' ').map(n => n[0]).join('')}
-                  </div>
-                  <h3 className="text-xl font-semibold text-white text-center">{selectedDoctor.name}</h3>
-                  <p className="text-white/70 text-center mb-2">{selectedDoctor.specialty}</p>
-                  <div className={`inline-block px-2 py-1 text-xs rounded-full bg-${getStatusColor(selectedDoctor.status)}-500/20 text-${getStatusColor(selectedDoctor.status)}-400 capitalize`}>
-                    {selectedDoctor.status.replace('_', ' ')}
-                  </div>
-                  
-                  <div className="flex items-center mt-3">
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <svg 
-                        key={star} 
-                        className={`w-5 h-5 ${star <= Math.floor(selectedDoctor.rating) ? 'text-yellow-400' : 'text-gray-400'}`} 
-                        fill="currentColor" 
-                        viewBox="0 0 20 20"
-                      >
-                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                      </svg>
-                    ))}
-                    <span className="ml-1 text-white/70">{selectedDoctor.rating}</span>
-                  </div>
+            <h2 className="text-2xl font-semibold text-white mb-6">Doctor Profile</h2>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <div className="flex flex-col items-center">
+                <div className="w-32 h-32 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center text-white text-3xl font-bold mb-4">
+                  {selectedDoctor.name.split(' ').map(n => n[0]).join('')}
                 </div>
                 
-                <div className="mt-6 space-y-3">
-                  <div className="flex items-center text-white/80">
-                    <svg className="w-5 h-5 mr-2 text-white/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                <h3 className="text-xl font-semibold text-white mb-1">{selectedDoctor.name}</h3>
+                <p className="text-white/70 mb-4">{selectedDoctor.specialty}</p>
+                
+                <div className="bg-green-500/20 text-green-400 px-3 py-1 rounded-full text-sm mb-4">
+                  Active
+                </div>
+                
+                <div className="flex items-center mb-4">
+                  {[1, 2, 3, 4, 5].map(star => (
+                    <svg 
+                      key={star} 
+                      className={`w-4 h-4 ${star <= Math.floor(selectedDoctor.rating) ? 'text-yellow-400' : 'text-gray-500'}`} 
+                      fill="currentColor" 
+                      viewBox="0 0 20 20"
+                    >
+                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                    </svg>
+                  ))}
+                  <span className="ml-1 text-white/70 text-sm">{selectedDoctor.rating}</span>
+                </div>
+                
+                <div className="w-full space-y-3 text-white/80">
+                  <div className="flex items-center">
+                    <svg className="w-5 h-5 mr-3 text-white/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                     </svg>
                     <span>{selectedDoctor.qualification}</span>
                   </div>
-                  <div className="flex items-center text-white/80">
-                    <svg className="w-5 h-5 mr-2 text-white/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  
+                  <div className="flex items-center">
+                    <svg className="w-5 h-5 mr-3 text-white/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                     <span>{selectedDoctor.experience} years experience</span>
                   </div>
-                  <div className="flex items-center text-white/80">
-                    <svg className="w-5 h-5 mr-2 text-white/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  
+                  <div className="flex items-center">
+                    <svg className="w-5 h-5 mr-3 text-white/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                     </svg>
                     <span>{selectedDoctor.patients} patients</span>
                   </div>
-                  <div className="flex items-center text-white/80">
-                    <svg className="w-5 h-5 mr-2 text-white/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  
+                  <div className="flex items-center">
+                    <svg className="w-5 h-5 mr-3 text-white/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                     </svg>
                     <span>{selectedDoctor.email}</span>
                   </div>
-                  <div className="flex items-center text-white/80">
-                    <svg className="w-5 h-5 mr-2 text-white/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  
+                  <div className="flex items-center">
+                    <svg className="w-5 h-5 mr-3 text-white/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                     </svg>
                     <span>{selectedDoctor.phone}</span>
@@ -375,28 +436,64 @@ const Doctors = () => {
               </div>
             </div>
             
-            <div className="flex justify-end space-x-3">
-              <button className="px-4 py-2 bg-white/10 text-white/80 rounded-lg hover:bg-white/15 hover:text-white transition-colors">
+            <div className="flex justify-end space-x-3 mt-8">
+              <button 
+                onClick={handleEditProfile}
+                className="px-4 py-2 bg-white/10 text-white/80 rounded-lg hover:bg-white/15 hover:text-white transition-colors"
+              >
                 Edit Profile
               </button>
-              <button className="px-4 py-2 bg-blue-500/10 text-blue-400 border border-blue-500/20 rounded-lg hover:bg-blue-500/20 transition-colors">
+              <button 
+                onClick={handleScheduleAppointment}
+                className="px-4 py-2 bg-blue-500/10 text-blue-400 border border-blue-500/20 rounded-lg hover:bg-blue-500/20 transition-colors"
+              >
                 Schedule Appointment
               </button>
               <button 
-                className="px-4 py-2 bg-gradient-to-r from-blue-600 to-teal-500 text-white rounded-lg shadow hover:from-blue-700 hover:to-teal-600 transition-all"
                 onClick={() => setIsProfileModalOpen(false)}
+                className="px-4 py-2 bg-gradient-to-r from-blue-600 to-teal-500 text-white rounded-lg shadow hover:from-blue-700 hover:to-teal-600 transition-all"
               >
                 Close
               </button>
             </div>
           </div>
-          
-          {/* Modal Overlay */}
-          <div 
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm" 
-            onClick={() => setIsProfileModalOpen(false)}
-          ></div>
         </div>
+      )}
+
+      {/* Add Doctor Modal */}
+      {isAddDoctorModalOpen && (
+        <AddDoctorModal
+          onClose={() => setIsAddDoctorModalOpen(false)}
+          onSave={handleAddDoctor}
+        />
+      )}
+      
+      {/* Edit Profile Modal */}
+      {isEditProfileModalOpen && selectedDoctor && (
+        <AddDoctorModal
+          onClose={() => {
+            setIsEditProfileModalOpen(false);
+            setIsProfileModalOpen(true);
+          }}
+          onSave={handleUpdateDoctor}
+          initialData={selectedDoctor}
+          isEditing={true}
+        />
+      )}
+      
+      {/* Schedule Appointment Modal */}
+      {isScheduleModalOpen && selectedDoctor && (
+        <ScheduleAppointmentModal
+          show={true}
+          onClose={() => {
+            setIsScheduleModalOpen(false);
+            setIsProfileModalOpen(true);
+          }}
+          onSave={handleSaveAppointment}
+          initialData={{
+            doctor: selectedDoctor.name
+          }}
+        />
       )}
     </div>
   );
